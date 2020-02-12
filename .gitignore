@@ -27,3 +27,6 @@ hs_err_pid*
 
 # IntelliJ iml files
 *.iml
+
+# Sqlite files
+*.sqlite

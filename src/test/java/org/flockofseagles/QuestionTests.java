@@ -12,7 +12,9 @@ public class QuestionTests {
         var answersArr = new String[]{"test", "question", "answers"};
         var question = "test question";
         int correctAnswerIndex = 0;
+
         var q = new Question(answersArr, correctAnswerIndex, question);
+
         assertArrayEquals( answersArr, q.getQuestionList());
         assertEquals(correctAnswerIndex, q.getCorrectAnswerIndex());
         assertEquals(question, q.getQuestion());
