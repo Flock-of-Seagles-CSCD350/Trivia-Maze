@@ -4,5 +4,5 @@ public interface QuestionUtility {
 
     Question[] loadQuestionSet();
 
-    void addQuestion();
+    void addQuestion(String question, String[] answers);
 }
