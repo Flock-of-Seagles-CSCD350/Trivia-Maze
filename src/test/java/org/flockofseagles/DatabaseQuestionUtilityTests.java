@@ -103,6 +103,59 @@ public class DatabaseQuestionUtilityTests {
         }
     }
 
+    @Test
+    public void databaseQuestionUtility_addQuestion_addsAnswers() {
+        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+
+        var rand = new Random();
+
+        String randomNumString = Integer.toString(rand.nextInt());
+        int initialRowCount = 0;
+
+        var randomAnswerArray = new String[4];
+
+        for(int i = 0; i < randomAnswerArray.length; i++) {
+            randomAnswerArray[i] = Integer.toString(rand.nextInt());
+        }
+
+        try {
+
+            String sqlStatement = "SELECT COUNT(*) FROM answer";
+
+            ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+
+            //Storing the number of results in the initialRowCount variable, for later comparison with the count after adding a new question
+            while(rs.next())
+                initialRowCount = rs.getInt(1);
+
+            rs.close();
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            db.addQuestion(randomNumString, randomAnswerArray);
+
+            String sqlStatement = String.format("SELECT * from answer", randomNumString);
+
+            ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+
+            int count = 0;
+
+            while(rs.next())
+                count++;
+
+            rs.close();
+
+            assertEquals(randomAnswerArray.length, count);
+
+        } catch(SQLException e) {
+            System.out.println("error in databaseQuestionUtility_addQuestion_addsQuestion");
+            e.printStackTrace();
+        }
+    }
+
     private void getConnection() {
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:questions.sqlite");

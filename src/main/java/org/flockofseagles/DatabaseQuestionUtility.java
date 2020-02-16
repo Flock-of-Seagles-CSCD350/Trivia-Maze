@@ -27,6 +27,26 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
+
+        try {
+
+            String sqlStatement = String.format("SELECT question_id from question WHERE question_string = %s", question);
+            int questionId = 0;
+
+            ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+
+            while(rs.next())
+                questionId = rs.getInt(1);
+
+
+            for(int i = 0; i < answers.length; i++) {
+                sqlStatement = String.format("INSERT INTO answer(answer_string, question_id) values('%s', '%s')", answers[i], questionId);
+                connection.prepareStatement(sqlStatement).execute();
+            }
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     public void createTables() {
@@ -39,7 +59,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
                     "question_category TEXT NOT NULL)").execute();
 
             connection.prepareStatement("CREATE TABLE IF NOT EXISTS answer (" +
-                    "answer_id INTEGER NOT NULL PRIMARY KEY," +
+                    "answer_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
                     "answer_string TEXT NOT NULL," +
                     "question_id INTEGER NOT NULL," +
                     "FOREIGN KEY(question_id) REFERENCES question(question_id))").execute();
