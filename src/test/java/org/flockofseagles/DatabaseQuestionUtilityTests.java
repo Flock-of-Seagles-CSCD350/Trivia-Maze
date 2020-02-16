@@ -16,6 +16,8 @@ public class DatabaseQuestionUtilityTests {
     @Before
     public void setup() {
         getConnection();
+        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+        db.createTables();
     }
 
     @After
@@ -29,13 +31,12 @@ public class DatabaseQuestionUtilityTests {
 
     @Test
     public void databaseQuestionUtility_createTables_createsTables() {
-        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
-        db.createTables();
+        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
         try {
 
-            ResultSet rs = connection.prepareStatement("SELECT * from question").executeQuery();
+             ResultSet rs = connection.prepareStatement("SELECT * from question").executeQuery();
 
             ResultSetMetaData rsmd = rs.getMetaData();
 
@@ -120,6 +121,22 @@ public class DatabaseQuestionUtilityTests {
 
         try {
 
+            String sqlStatement = "SELECT COUNT(*) FROM question";
+
+            ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+
+            //Storing the number of results in the initialRowCount variable, for later comparison with the count after adding a new question
+            while(rs.next())
+                initialRowCount = rs.getInt(1);
+
+            rs.close();
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+        try {
+
             String sqlStatement = "SELECT COUNT(*) FROM answer";
 
             ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
@@ -148,12 +165,21 @@ public class DatabaseQuestionUtilityTests {
 
             rs.close();
 
-            assertEquals(randomAnswerArray.length, count);
+            assertEquals(initialRowCount + randomAnswerArray.length, count);
 
         } catch(SQLException e) {
             System.out.println("error in databaseQuestionUtility_addQuestion_addsQuestion");
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void databaseQuestionUtility_loadQuestionSet_loadsQuestionsIntoArray() {
+        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+
+        var questionSet = db.loadQuestionSet();
+
+        assertNotEquals(0, questionSet.length);
     }
 
     private void getConnection() {

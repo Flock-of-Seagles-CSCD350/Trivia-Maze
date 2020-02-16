@@ -11,7 +11,43 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
     @Override
     public Question[] loadQuestionSet() {
-        return new Question[0];
+        Connection connection = getConnection();
+        var questionSet = new Question[10];
+
+        try {
+
+            String sqlStatement = "SELECT *" +
+                                    "FROM question LIMIT 10";
+
+
+
+            ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+
+            for(int i = 0; i < questionSet.length && rs.next(); i++) {
+                String  questionId = rs.getString(1);
+                var answerArr = new String[4];
+
+                sqlStatement = String.format("SELECT answer_string " +
+                        "FROM answer WHERE question_id = %s LIMIT 4", questionId);
+
+                ResultSet answerResultSet = connection.prepareStatement(sqlStatement).executeQuery();
+
+                for(int j = 0; j < answerArr.length; j++) {
+                    answerArr[j] = answerResultSet.getString(1);
+                }
+
+                String answerString = rs.getString(2);
+                System.out.println(answerString);
+                questionSet[i] = new Question(answerArr, 0, rs.getString(2));
+            }
+
+
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+
+        return questionSet;
     }
 
     @Override
@@ -25,7 +61,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
             connection.prepareStatement(sqlStatement).execute();
 
         } catch(SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
 
         try {
@@ -45,7 +81,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
             }
 
         } catch(SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -54,7 +90,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
         try {
             connection.prepareStatement("CREATE TABLE IF NOT EXISTS question (" +
-                    "question_id INTEGER NOT NULL PRIMARY KEY," +
+                    "question_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
                     "question_string TEXT NOT NULL," +
                     "question_category TEXT NOT NULL)").execute();
 
