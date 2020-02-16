@@ -51,13 +51,12 @@ public class DatabaseQuestionUtility implements QuestionUtility {
     }
 
     private Connection getConnection() {
-        if(this.connection == null) {
-            try {
+        try {
+            if(connection == null || connection.isClosed())
                 connection = DriverManager.getConnection("jdbc:sqlite:questions.sqlite");
 
-            } catch(SQLException e) {
-                System.out.println(e.getMessage());
-            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
         return connection;

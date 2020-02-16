@@ -15,7 +15,6 @@ public class DatabaseQuestionUtilityTests {
 
     @Before
     public void setup() {
-        System.out.println("running before method");
         getConnection();
     }
 
