@@ -1,9 +1,14 @@
 package org.flockofseagles;
 
+import org.flockofseagles.console.admin.AdminMenu;
+
+import java.util.Scanner;
+
 public class TriviaMaze {
 
 	public static void main(String[] args) {
-		// Auto-generated stub
+		Scanner input = new Scanner(System.in);
+		new AdminMenu(input).open();
 	}
 
 }

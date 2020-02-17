@@ -6,25 +6,34 @@ import java.util.Scanner;
 
 public abstract class ConsoleMenu {
 
-    private final Scanner input = new Scanner(System.in);
+	protected final String title;
 
-    private final String name;
-    private final ConsoleMenu previousMenu;
+	private final ConsoleMenu previousMenu;
+	private final Scanner     input;
 
-    protected final ArrayList<MenuItem> menuItems = new ArrayList<>();
+	protected final ArrayList<MenuItem> menuItems = new ArrayList<>();
 
-    public ConsoleMenu(final String name, final ConsoleMenu previousMenu) {
-        this.name = name;
-        this.previousMenu = previousMenu;
-    }
+	public ConsoleMenu(final String title, final ConsoleMenu previousMenu, final Scanner input) {
+		this.title        = title;
+		this.previousMenu = previousMenu;
+		this.input        = input;
+	}
 
-    public ConsoleMenu(final String name) {
-        this(name, null);
-    }
+	public ConsoleMenu(final String title, final Scanner input) {
+		this(title, null, input);
+	}
 
-    public void open() {
-        System.out.println();
-        menuItems.forEach(menuItem -> System.out.printf("%d) %s", menuItems.indexOf(menuItem), menuItem.getTitle()));
-    }
+	public void open() {
+		System.out.println();
+		System.out.println("\u2B16 " + title + " \u2B17");
+		System.out.print(getDescription());
+		menuItems.forEach(menuItem -> System.out.printf("     %d \u2B9E %s\n", menuItems.indexOf(menuItem) + 1, menuItem.getTitle()));
+		int choice = InputWrapper.readMenuChoice("Make a selection: ", menuItems.size());
+		menuItems.get(choice - 1).select();
+	}
+
+	protected String getDescription() {
+		return "";
+	}
 
 }

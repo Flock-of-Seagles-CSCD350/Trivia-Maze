@@ -4,13 +4,15 @@ package org.flockofseagles.console.admin;
 import org.flockofseagles.console.ConsoleMenu;
 import org.flockofseagles.console.MenuItem;
 
+import java.util.Scanner;
+
 public class AdminMenu extends ConsoleMenu {
 
-	public AdminMenu() {
-		super("Admin Console");
+	public AdminMenu(final Scanner input) {
+		super("Admin Console", input);
 
-		menuItems.add(new MenuItem("View Maze Questions", () -> new QuestionMenu().open()));
+		menuItems.add(new MenuItem("View Maze Questions",
+		                           () -> new ListQuestionMenu(input).open()));
 	}
-
 
 }
