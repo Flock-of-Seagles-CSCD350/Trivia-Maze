@@ -15,8 +15,7 @@ public class QuestionTests {
 
         var q = new Question(answersArr, correctAnswerIndex, question);
 
-        assertArrayEquals( answersArr, q.getQuestionList());
-        assertEquals(correctAnswerIndex, q.getCorrectAnswerIndex());
+        assertArrayEquals( answersArr, q.getPossibleAnswers());
         assertEquals(question, q.getQuestion());
     }
 }

@@ -1,9 +1,7 @@
 package org.flockofseagles;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+
 import static org.junit.Assert.*;
 
 import java.sql.*;
@@ -17,11 +15,29 @@ public class DatabaseQuestionUtilityTests {
     public void setup() {
         getConnection();
         DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+        db.addInitialQuestionSets();
         db.createTables();
     }
 
     @After
     public void teardown() {
+        try {
+            DatabaseQuestionUtilityTests.connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @AfterClass
+    public static void cleanup() {
+
+        try {
+            connection = DriverManager.getConnection("jdbc:sqlite:questions.sqlite");
+
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+
         try {
             DatabaseQuestionUtilityTests.connection.close();
         } catch (SQLException e) {
@@ -51,6 +67,7 @@ public class DatabaseQuestionUtilityTests {
             assertEquals("answer_id", rsmd.getColumnName(1));
             assertEquals("answer_string", rsmd.getColumnName(2));
 
+
         } catch(SQLException e) {
             System.out.println("error in databaseQuestionUtility_createTables_createsTables");
             e.printStackTrace();
@@ -62,6 +79,14 @@ public class DatabaseQuestionUtilityTests {
         DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
         db.createTables();
+
+        var randomAnswerArray = new String[4];
+
+        var rand = new Random();
+
+        for(int i = 0; i < randomAnswerArray.length; i++) {
+            randomAnswerArray[i] = Integer.toString(rand.nextInt());
+        }
 
         String randomNumString = Integer.toString(new Random().nextInt());
         int initialRowCount = 0;
@@ -76,14 +101,13 @@ public class DatabaseQuestionUtilityTests {
             while(rs.next())
                 initialRowCount = rs.getInt(1);
 
-            rs.close();
 
         } catch(SQLException e) {
             e.printStackTrace();
         }
 
         try {
-            db.addQuestion(randomNumString, new String[4]);
+            db.addQuestion(randomNumString, randomAnswerArray);
 
             String sqlStatement = String.format("SELECT * from question WHERE question_string = %s", randomNumString);
 
@@ -94,7 +118,6 @@ public class DatabaseQuestionUtilityTests {
             while(rs.next())
                 count++;
 
-            rs.close();
 
             assertNotEquals(initialRowCount, count);
 
@@ -129,7 +152,6 @@ public class DatabaseQuestionUtilityTests {
             while(rs.next())
                 initialRowCount = rs.getInt(1);
 
-            rs.close();
 
         } catch(SQLException e) {
             e.printStackTrace();
@@ -144,8 +166,6 @@ public class DatabaseQuestionUtilityTests {
             //Storing the number of results in the initialRowCount variable, for later comparison with the count after adding a new question
             while(rs.next())
                 initialRowCount = rs.getInt(1);
-
-            rs.close();
 
         } catch(SQLException e) {
             e.printStackTrace();
@@ -163,8 +183,6 @@ public class DatabaseQuestionUtilityTests {
             while(rs.next())
                 count++;
 
-            rs.close();
-
             assertEquals(initialRowCount + randomAnswerArray.length, count);
 
         } catch(SQLException e) {
@@ -180,6 +198,16 @@ public class DatabaseQuestionUtilityTests {
         var questionSet = db.loadQuestionSet();
 
         assertNotEquals(0, questionSet.length);
+
+        for(int i = 0; i < questionSet.length; i++) {
+            assertFalse(questionSet[i] == null && questionSet[i].getQuestion() == null && questionSet[i].getQuestion().isEmpty());
+
+            var answersArr = questionSet[i].getPossibleAnswers();
+
+            for(int j = 0; j < answersArr.length; j++) {
+                assertFalse(answersArr[j] == null &&answersArr[j].isEmpty());
+            }
+        }
     }
 
     private void getConnection() {
