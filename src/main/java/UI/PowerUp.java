@@ -5,24 +5,20 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-public class Player
+public class PowerUp
 {
 
-	protected int xVal, yVal;
-
-	public Player(int x, int y)
+	public void usePowerUp(Player player)
 	{
-		this.xVal = x;
-		this.yVal = y;
+
 	}
 
 	public void draw(Canvas canvas)
 	{
 		ImageView im = new ImageView();
-		im.setImage(new Image("/UI/images/test.png"));
+		im.setImage(new Image("/UI/images/powerup.png"));
 		GraphicsContext gc = canvas.getGraphicsContext2D();
-		canvas.setUserData("Player");
+		canvas.setUserData("Wall");
 		gc.drawImage(im.getImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
 	}
-
 }

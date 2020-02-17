@@ -8,9 +8,11 @@ import javafx.scene.image.ImageView;
 public class Wall
 {
 	protected boolean isLocked;
-
-	public Wall()
+	protected int xVal, yVal;
+	public Wall(int x, int y)
 	{
+		this.xVal = x;
+		this.yVal = y;
 		this.isLocked = false;
 	}
 
@@ -30,5 +32,10 @@ public class Wall
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		canvas.setUserData("Wall");
 		gc.drawImage(im.getImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
+	}
+
+	public boolean checkLocked()
+	{
+		return this.isLocked;
 	}
 }
