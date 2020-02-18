@@ -30,3 +30,4 @@ hs_err_pid*
 
 # Sqlite files
 *.sqlite
+/src/trivia-maze.iml
