@@ -1,7 +1,7 @@
 package org.flockofseagles.console;
 /* Created by GamerBah on 2/12/20 */
 
-public class MenuItem implements MenuRunnable {
+public class MenuItem implements MenuRunnable, Comparable<MenuItem> {
 
 	private final String   title;
 	private final Runnable event;
@@ -17,6 +17,11 @@ public class MenuItem implements MenuRunnable {
 
 	public void select() {
 		event.run();
+	}
+
+	@Override
+	public int compareTo(MenuItem other) {
+		return title.compareTo(other.title);
 	}
 
 }

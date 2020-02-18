@@ -17,9 +17,9 @@ public class EditQuestionMenu extends ConsoleMenu {
 		this.question = question;
 
 		addMenuItem(
-				new MenuItem("Edit Question Name", this::editName),
+				new MenuItem("Edit Question Text", this::editText),
 				new MenuItem("Edit Question Answers", () -> new ListAnswersMenu(question, this, input).open()),
-				new MenuItem("Delete Question", () -> System.out.println("NYI"))
+				new MenuItem("Delete Question", this::deleteQuestion)
 		);
 	}
 
@@ -28,10 +28,17 @@ public class EditQuestionMenu extends ConsoleMenu {
 		return "\"" + question + "\"\n";
 	}
 
-	private void editName() {
+	private void editText() {
 		// TODO: Use Question class
-		String name = InputWrapper.readString("Enter a new name for the question: ");
-		getPreviousMenu().open();
+		question = InputWrapper.readString("Enter new text for the question: ");
+		System.out.println("Text successfully changed!");
+		this.open();
+	}
+
+	private void deleteQuestion() {
+		// TODO: Use Database
+		System.out.println("Not Yet Implemented");
+		this.open();
 	}
 
 }

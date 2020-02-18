@@ -17,6 +17,7 @@ public final class InputWrapper {
 			System.out.print(message);
 			choice = INPUT.next();
 		}
+		INPUT.nextLine();
 		return Integer.parseInt(choice);
 	}
 
@@ -26,7 +27,7 @@ public final class InputWrapper {
 
 	public static String readString(final String message) {
 		System.out.print(message);
-		String string = INPUT.next();
+		String string = INPUT.nextLine();
 		while (string.isEmpty()) {
 			System.out.println("\u274C That's not a valid entry! \u274C\n");
 			System.out.print(message);

@@ -28,15 +28,15 @@ public class EditAnswerMenu extends ConsoleMenu {
 
 	private void edit() {
 		// TODO: Use Question class & integrate with database
-		String name = InputWrapper.readString("Enter a new name for the question: ");
+		String name = InputWrapper.readString("Enter new text for the answer: ");
 		System.out.println("Not Yet Implemented");
-		getPreviousMenu().open();
+		this.open();
 	}
 
 	private void remove() {
 		// TODO: Integrate with database
-		System.out.println("Question deleted successfully!");
-		getPreviousMenu().open();
+		System.out.println("Not Yet Implemented");
+		this.open();
 	}
 
 }

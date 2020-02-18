@@ -12,7 +12,7 @@ public class AdminMenu extends ConsoleMenu {
 	public AdminMenu(final Scanner input) {
 		super("Admin Console", input);
 
-		addMenuItem(new MenuItem("View Maze Questions", () -> new ListQuestionMenu(this, input).open()));
+		addMenuItem(new MenuItem("View Maze Questions", () -> new ListQuestionMenu(this, input).open(true)));
 	}
 
 }
