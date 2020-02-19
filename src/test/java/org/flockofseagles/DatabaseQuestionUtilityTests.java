@@ -1,8 +1,10 @@
 package org.flockofseagles;
 
-import org.junit.*;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.*;
 import java.util.Random;
@@ -11,7 +13,7 @@ public class DatabaseQuestionUtilityTests {
 
     private static Connection connection = null;
 
-    @Before
+    @BeforeEach
     public void setup() {
         getConnection();
         DatabaseQuestionUtility db = new DatabaseQuestionUtility();
@@ -19,7 +21,7 @@ public class DatabaseQuestionUtilityTests {
         db.createTables();
     }
 
-    @After
+    @AfterEach
     public void teardown() {
         try {
             DatabaseQuestionUtilityTests.connection.close();
@@ -28,7 +30,7 @@ public class DatabaseQuestionUtilityTests {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() {
 
         try {

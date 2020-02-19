@@ -1,8 +1,8 @@
 package org.flockofseagles;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class QuestionTests {
 
@@ -18,4 +18,5 @@ public class QuestionTests {
         assertArrayEquals( answersArr, q.getPossibleAnswers());
         assertEquals(question, q.getQuestion());
     }
+
 }
