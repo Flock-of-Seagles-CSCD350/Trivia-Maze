@@ -1,4 +1,5 @@
 # Trivia-Maze
+![Java CI Workflow](https://github.com/Flock-of-Seagles-CSCD350/Trivia-Maze/workflows/Java%20CI%20Workflow/badge.svg?branch=iteration-1)
 ### Team project for EWU CSCD350
 ___
 
