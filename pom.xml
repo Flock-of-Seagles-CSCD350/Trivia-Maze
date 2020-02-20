@@ -72,7 +72,6 @@
                     <version>3.8.0</version>
                     <configuration>
                         <release>13</release>
-                        <compilerArgs>--enable-preview</compilerArgs>
                         <annotationProcessorPaths>
                             <path>
                                 <groupId>org.projectlombok</groupId>
@@ -86,7 +85,6 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M4</version>
                     <configuration>
-                        <argLine>--enable-preview</argLine>
                     </configuration>
                 </plugin>
                 <plugin>
