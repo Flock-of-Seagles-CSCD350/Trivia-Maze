@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" style="-fx-background-color: #EDEDED;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UI.OptionsLayoutController">
+    <children>
+        <StackPane fx:id="stPane" layoutX="36.0" layoutY="48.0" prefHeight="257.0" prefWidth="315.0" style="-fx-border-color: #ffaa00; -fx-border-width: 5;">
+            <children>
+                <Canvas fx:id="gameCanvas" height="251.0" width="303.0" />
+            </children>
+        </StackPane>
+        <MenuBar fx:id="menu" prefHeight="27.0" prefWidth="400.0" style="-fx-background-color: #ffaa00;">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Close" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Delete" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="About" />
+                    </items>
+                </Menu>
+            </menus>
+            <effect>
+                <DropShadow color="WHITE" />
+            </effect>
+        </MenuBar>
+        <Label fx:id="txt_question" alignment="CENTER" layoutX="27.0" layoutY="450.0" prefHeight="100.0" prefWidth="170.0" style="-fx-background-color: white;" text="Question goes here">
+            <effect>
+                <DropShadow color="#ffaa00" />
+            </effect>
+        </Label>
+        <Label layoutX="200.0" layoutY="450.0" prefHeight="100.0" prefWidth="170.0" style="-fx-background-color: white;">
+            <effect>
+                <DropShadow color="#ffaa00" />
+            </effect>
+        </Label>
+        <VBox fx:id="vbox_answers" alignment="CENTER" disable="true" layoutX="200.0" layoutY="450.0" prefHeight="100.0" prefWidth="170.0">
+            <children>
+                <RadioButton fx:id="answer1" alignment="TOP_CENTER" mnemonicParsing="false" text="Answer1" />
+                <RadioButton fx:id="answer2" mnemonicParsing="false" text="Answer2" />
+                <RadioButton fx:id="answer3" alignment="BOTTOM_CENTER" mnemonicParsing="false" text="Answer3" />
+                <RadioButton fx:id="answer4" mnemonicParsing="false" text="Answer4" />
+            </children>
+        </VBox>
+        <Label fx:id="lbl_info" layoutX="73.0" layoutY="309.0" prefHeight="27.0" prefWidth="241.0" text="Use the arrow keys to move around the map" />
+    </children>
+</AnchorPane>
