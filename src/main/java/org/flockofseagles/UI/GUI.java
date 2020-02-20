@@ -25,7 +25,7 @@ public class GUI extends Application
 	@Override
 	public void start(Stage primaryStage) throws Exception
 	{
-		Parent root = FXMLLoader.load(getClass().getResource("Document.fxml"));
+		Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Document.fxml"));
 		field = OptionsLayoutController.field;
 		Scene scene = new Scene(root, 400, 600);
 		scene.setOnKeyPressed(this::onKeyPressed);
