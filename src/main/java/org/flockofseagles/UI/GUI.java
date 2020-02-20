@@ -26,7 +26,7 @@ public class GUI extends Application
 	public void start(Stage primaryStage) throws Exception
 	{
 		Parent root = FXMLLoader.load(getClass().getResource("Document.fxml"));
-		 field = OptionsLayoutController.field;
+		field = OptionsLayoutController.field;
 		Scene scene = new Scene(root, 400, 600);
 		scene.setOnKeyPressed(this::onKeyPressed);
 		primaryStage.setTitle("Trivia Maze");
