@@ -15,10 +15,8 @@ public class ListQuestionMenu extends ConsoleMenu {
 
 	@Override
 	protected String getDescription() {
-		return """
-		       Select a question by its number, or
-		       add a new question by entering  +
-		       """;
+		return "Select a question by its number, or\n" +
+			   "add a new question by entering  +\n";
 	}
 
 }

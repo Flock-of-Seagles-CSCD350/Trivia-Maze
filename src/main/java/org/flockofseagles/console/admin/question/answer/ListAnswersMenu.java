@@ -24,12 +24,10 @@ public class ListAnswersMenu extends ConsoleMenu {
 
 	@Override
 	protected String getDescription() {
-		return "\"" + question + "\"" + """
-
-
-		                                Select a question by its number, or
-		                                add a new question by entering  +
-		                                """;
+		return "\"" + question + "\"" + "\n" +
+			   "\n" +
+			   "Select a question by its number, or\n" +
+			   "add a new question by entering  +\n";
 	}
 
 }
