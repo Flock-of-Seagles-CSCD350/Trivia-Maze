@@ -1,4 +1,4 @@
-package org.flockofseagles.UI;
+package org.flockofseagles.ui;
 
 import javafx.fxml.Initializable;
 
@@ -14,8 +14,7 @@ public class DocumentController extends Dialog implements Initializable
 	}
 
 	@Override
-	public void initialize(URL location, ResourceBundle resources)
-	{
+	public void initialize(URL location, ResourceBundle resources) {
 
 	}
 }

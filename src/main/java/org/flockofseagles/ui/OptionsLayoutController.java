@@ -1,4 +1,4 @@
-package org.flockofseagles.UI;
+package org.flockofseagles.ui;
 
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -16,8 +16,7 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class OptionsLayoutController extends Dialog<Void> implements Initializable
-{
+public class OptionsLayoutController extends Dialog<Void> implements Initializable {
 	public StackPane stPane;
 	public Canvas gameCanvas = new Canvas();
 	public Label txt_question;
@@ -33,23 +32,18 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 
 
 	/*
-		public OptionsLayoutController() throws IOException
-		{
+		public OptionsLayoutController() throws IOException {
 			super();
 	
 			FXMLLoader loader = new FXMLLoader();
 			loader.setLocation(getClass().getResource("Document.fxml"));
 			loader.setController(this);
 			Parent root = loader.load();
-	
-	
-	
+
 		}
 		*/
 	@Override
-	public void initialize(URL location, ResourceBundle resources)
-	{
-
+	public void initialize(URL location, ResourceBundle resources) {
 		field = new PlayField(gameCanvas);
 		field.initializePlayField();
 		field.setMaze();
@@ -57,23 +51,15 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 	}
 
 
-	public void onKeyPressed(KeyEvent keyEvent)
-	{
-		if(new KeyCodeCombination(KeyCode.UP).match(keyEvent))
-		{
+	public void onKeyPressed(KeyEvent keyEvent) {
+		if(new KeyCodeCombination(KeyCode.UP).match(keyEvent)) {
 			System.out.println("pressed");
 			field.updatePlayer(1);
-		}
-		else if(keyEvent.getCode() == KeyCode.DOWN)
-		{
+		} else if(keyEvent.getCode() == KeyCode.DOWN) {
 			field.updatePlayer(2);
-		}
-		else if(keyEvent.getCode() == KeyCode.LEFT)
-		{
+		} else if(keyEvent.getCode() == KeyCode.LEFT) {
 			field.updatePlayer(3);
-		}
-		else if(keyEvent.getCode() == KeyCode.RIGHT)
-		{
+		} else if(keyEvent.getCode() == KeyCode.RIGHT) {
 			field.updatePlayer(4);
 		}
 	}
