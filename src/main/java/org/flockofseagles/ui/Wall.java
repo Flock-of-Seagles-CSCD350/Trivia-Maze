@@ -30,6 +30,13 @@ public class Wall
 		canvas.setUserData("Wall");
 		gc.drawImage(im.getImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
 	}
+	public void drawMid(Canvas canvas) {
+		ImageView im = new ImageView();
+		im.setImage(new Image("/images/wall_middle.png"));
+		GraphicsContext gc = canvas.getGraphicsContext2D();
+		canvas.setUserData("Wall");
+		gc.drawImage(im.getImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
+	}
 
 	public boolean checkLocked()
 	{
