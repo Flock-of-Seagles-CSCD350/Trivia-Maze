@@ -67,7 +67,8 @@ public class PlayField extends GridPane {
 					w.drawHorz(canvas);
 				} else if((j % 2) == 1 && (i % 2) == 1) {
 					canvas = this.field[i][j];
-					p.draw(canvas);
+					w = new Wall(i,j);
+					w.drawMid(canvas);
 				} else {
 					canvas = this.field[i][j];
 				}

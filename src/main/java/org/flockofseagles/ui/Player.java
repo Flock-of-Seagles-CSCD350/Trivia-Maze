@@ -16,7 +16,7 @@ public class Player {
 
 	public void draw(Canvas canvas) {
 		ImageView im = new ImageView();
-		im.setImage(new Image("/org/flockofseagles/ui/images/test.png"));
+		im.setImage(new Image("/images/pixelPlayer.png"));
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		canvas.setUserData("Player");
 		gc.drawImage(im.getImage(), 0, 0, canvas.getWidth(), canvas.getHeight());

@@ -17,7 +17,7 @@ public class Wall
 
 	public void drawVert(Canvas canvas) {
 		ImageView im = new ImageView();
-		im.setImage(new Image("/org/flockofseagles/ui/images/wall_vert.png"));
+		im.setImage(new Image("/images/wall_vert.png"));
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		canvas.setUserData("Wall");
 		gc.drawImage(im.getImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
@@ -25,7 +25,14 @@ public class Wall
 
 	public void drawHorz(Canvas canvas) {
 		ImageView im = new ImageView();
-		im.setImage(new Image("/org/flockofseagles/ui/images/wall_horz.png"));
+		im.setImage(new Image("/images/wall_horz.png"));
+		GraphicsContext gc = canvas.getGraphicsContext2D();
+		canvas.setUserData("Wall");
+		gc.drawImage(im.getImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
+	}
+	public void drawMid(Canvas canvas) {
+		ImageView im = new ImageView();
+		im.setImage(new Image("/images/wall_middle.png"));
 		GraphicsContext gc = canvas.getGraphicsContext2D();
 		canvas.setUserData("Wall");
 		gc.drawImage(im.getImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
