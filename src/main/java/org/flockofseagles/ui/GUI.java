@@ -1,6 +1,7 @@
 package org.flockofseagles.ui;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,24 +19,24 @@ public class GUI extends Application {
 		Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Document.fxml"));
 		field = OptionsLayoutController.field;
 		Scene scene = new Scene(root, 400, 600);
-		scene.setOnKeyPressed(this::onKeyPressed);
+		scene.setOnKeyPressed(
+				keyEvent -> {
+					if(new KeyCodeCombination(KeyCode.UP).match(keyEvent)) {
+						System.out.println("pressed");
+						field.updatePlayer(1);
+					} else if(new KeyCodeCombination(KeyCode.DOWN).match(keyEvent)) {
+
+						field.updatePlayer(2);
+					} else if(new KeyCodeCombination(KeyCode.LEFT).match(keyEvent)) {
+						field.updatePlayer(3);
+					} else if(new KeyCodeCombination(KeyCode.RIGHT).match(keyEvent)) {
+						field.updatePlayer(4);
+					}
+				}
+		);
 		primaryStage.setTitle("Trivia Maze");
 		primaryStage.setScene(scene);
 		primaryStage.show();
-	}
-
-	public void onKeyPressed(KeyEvent keyEvent) {
-		if(new KeyCodeCombination(KeyCode.UP).match(keyEvent)) {
-			System.out.println("pressed");
-			field.updatePlayer(1);
-		} else if(new KeyCodeCombination(KeyCode.DOWN).match(keyEvent)) {
-
-			field.updatePlayer(2);
-		} else if(new KeyCodeCombination(KeyCode.LEFT).match(keyEvent)) {
-			field.updatePlayer(3);
-		} else if(new KeyCodeCombination(KeyCode.RIGHT).match(keyEvent)) {
-			field.updatePlayer(4);
-		}
 	}
 }
 
