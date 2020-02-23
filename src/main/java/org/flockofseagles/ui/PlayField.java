@@ -4,16 +4,25 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.GridPane;
+import org.flockofseagles.DatabaseQuestionUtility;
+import org.flockofseagles.Question;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PlayField extends GridPane {
 	protected Canvas[][] field;
 	protected Player player = new Player(0 , 0);
 	ArrayList<Wall> walls = new ArrayList<>();
+	private List<Question> questionList;
 
 	public PlayField(Canvas canvas) {
 		super();
+
+		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+		db.addInitialQuestionSets();
+		questionList = db.loadQuestionSet();
+
 		this.setWidth(canvas.getWidth());
 		this.setHeight(canvas.getHeight());
 		this.field = initializePlayField();
@@ -88,16 +97,12 @@ public class PlayField extends GridPane {
 				alert.setTitle("Invalid Move");
 				alert.setHeaderText("Cannot move up!");
 				alert.show();
-			}
-
-
-			else {
+			} else {
 				//w = getWall(player.xVal - 1, player.yVal);
 				clearCanvas(canvas);
 				canvas = this.field[player.xVal - 2][player.yVal];
 				player.draw(canvas);
 				player.xVal = player.xVal - 2;
-
 			}
 		} else if(i == 2) { //move down
 			if(player.xVal == this.field.length - 1) {
@@ -112,23 +117,18 @@ public class PlayField extends GridPane {
 				player.draw(canvas);
 				player.xVal = player.xVal + 2;
 			}
-		}
-		else if(i == 3) { //move left
+		} else if(i == 3) { //move left
 			if(player.yVal == 0) {
 				Alert alert = new Alert(Alert.AlertType.ERROR);
 				alert.setTitle("Invalid Move");
 				alert.setHeaderText("Cannot move left");
 				alert.show();
-			}
-
-
-			else {
+			} else {
 				//w = getWall(player.xVal - 1, player.yVal);
 				clearCanvas(canvas);
 				canvas = this.field[player.xVal][player.yVal - 2];
 				player.draw(canvas);
 				player.yVal = player.yVal - 2;
-
 			}
 		} else if(i == 4) { //move right
 			if(player.yVal == this.field.length - 1) {
@@ -136,18 +136,15 @@ public class PlayField extends GridPane {
 				alert.setTitle("Invalid Move");
 				alert.setHeaderText("Cannot move right!");
 				alert.show();
-			}
-
-
-			else {
+			} else {
 				//w = getWall(player.xVal + 1, player.yVal);
 				clearCanvas(canvas);
 				canvas = this.field[player.xVal][player.yVal + 2];
 				player.draw(canvas);
 				player.yVal = player.yVal + 2;
-
 			}
 		}
+
 	}
 
 	public void clearCanvas(Canvas canvas) {
@@ -166,5 +163,9 @@ public class PlayField extends GridPane {
 				return w;
 		}
 		return null;
+	}
+
+	public Question getQuestion() {
+		return this.questionList.remove(0);
 	}
 }

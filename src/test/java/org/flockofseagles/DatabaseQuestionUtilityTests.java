@@ -199,12 +199,12 @@ public class DatabaseQuestionUtilityTests {
 
         var questionSet = db.loadQuestionSet();
 
-        assertNotEquals(0, questionSet.length);
+        assertNotEquals(0, questionSet.size());
 
-        for(int i = 0; i < questionSet.length; i++) {
-            assertFalse(questionSet[i] == null && questionSet[i].getQuestion() == null && questionSet[i].getQuestion().isEmpty());
+        for(int i = 0; i < questionSet.size(); i++) {
+            assertFalse(questionSet.get(i) == null && questionSet.get(i).getQuestion() == null && questionSet.get(i).getQuestion().isEmpty());
 
-            var answersArr = questionSet[i].getPossibleAnswers();
+            var answersArr = questionSet.get(i).getPossibleAnswers();
 
             for(int j = 0; j < answersArr.length; j++) {
                 assertFalse(answersArr[j] == null &&answersArr[j].isEmpty());

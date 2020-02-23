@@ -5,41 +5,41 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseQuestionUtility implements QuestionUtility {
 
     private static Connection connection = null;
 
     @Override
-    public Question[] loadQuestionSet() {
+    public List<Question> loadQuestionSet() {
         Connection connection = getConnection();
-        var questionSet = new Question[10];
+        var questionSet = new ArrayList<Question>();
 
         try {
 
             String sqlStatement = "SELECT *" +
-                                    "FROM question LIMIT 10";
+                                    "FROM question LIMIT 100";
 
             ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
 
-            for(int i = 0; i < questionSet.length && rs.next(); i++) {
+            for(int i = 0; rs.next(); i++) {
                 String questionId = rs.getString(1);
                 var answerArr = new String[4];
-
-                System.out.println(questionId);
 
                 String answerSqlStatement = String.format("SELECT answer_string " +
                         "FROM answer WHERE question_id = %s LIMIT 4", questionId);
 
                 ResultSet answerResultSet = connection.prepareStatement(answerSqlStatement).executeQuery();
 
-
                 for (int j = 0; j < answerArr.length; j++) {
                     String answer = answerResultSet.getString(1);
                     answerArr[j] = answer;
                 }
 
-                questionSet[i] = new Question(answerArr, 0, rs.getString(2));
+                String questionString = rs.getString(2);
+
+                questionSet.add( new Question(answerArr, 0, questionString) );
             }
 
         } catch(SQLException e) {
@@ -58,8 +58,6 @@ public class DatabaseQuestionUtility implements QuestionUtility {
             String sqlStatement = String.format("INSERT INTO question(question_string, question_category) values('%s', '%s')", question, "multiple choice");
 
             connection.prepareStatement(sqlStatement).execute();
-
-            System.out.println("question added");
 
         } catch(SQLException e) {
             e.printStackTrace();

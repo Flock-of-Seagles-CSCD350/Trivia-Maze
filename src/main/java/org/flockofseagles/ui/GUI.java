@@ -20,23 +20,14 @@ public class GUI extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
-		Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("Document.fxml"));
+		FXMLLoader documentLoader = new FXMLLoader(getClass().getClassLoader().getResource("Document.fxml"));
+		Parent root = documentLoader.load();
+		OptionsLayoutController optionsController = documentLoader.getController();
 		field = OptionsLayoutController.field;
 		Scene scene = new Scene(root, 600, 600);
-		scene.setOnKeyPressed(
-				keyEvent -> {
-					if(new KeyCodeCombination(KeyCode.UP).match(keyEvent)) {
-						field.updatePlayer(1);
-					} else if(new KeyCodeCombination(KeyCode.DOWN).match(keyEvent)) {
 
-						field.updatePlayer(2);
-					} else if(new KeyCodeCombination(KeyCode.LEFT).match(keyEvent)) {
-						field.updatePlayer(3);
-					} else if(new KeyCodeCombination(KeyCode.RIGHT).match(keyEvent)) {
-						field.updatePlayer(4);
-					}
-				}
-		);
+		scene.setOnKeyPressed( optionsController::onKeyPressed );
+
 		primaryStage.setTitle("Trivia Maze");
 		primaryStage.setScene(scene);
 		primaryStage.show();
