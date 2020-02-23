@@ -33,6 +33,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
                 ResultSet answerResultSet = connection.prepareStatement(answerSqlStatement).executeQuery();
 
                 for (int j = 0; j < answerArr.length; j++) {
+                    answerResultSet.next();
                     String answer = answerResultSet.getString(1);
                     answerArr[j] = answer;
                 }

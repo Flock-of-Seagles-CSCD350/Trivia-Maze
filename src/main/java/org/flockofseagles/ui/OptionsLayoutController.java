@@ -7,15 +7,13 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import org.flockofseagles.Question;
 
-import javax.swing.*;
-import java.awt.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -44,17 +42,6 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 	public Label lbl_info;
 
 
-	/*
-		public OptionsLayoutController() throws IOException {
-			super();
-	
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("Document.fxml"));
-			loader.setController(this);
-			Parent root = loader.load();
-
-		}
-		*/
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		field = new PlayField(gameCanvas);
@@ -65,12 +52,19 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 				BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
 		stPane.getChildren().add(field);
 
-		txt_question.setText(field.getQuestion().getQuestion());
 		txt_question.setWrapText(true);
 	}
 
-	private void updateFields() {
-		txt_question.setText(field.getQuestion().getQuestion());
+	private void updateQuestionFields() {
+		Question q = field.getQuestion();
+		txt_question.setText(q.getQuestion());
+
+		String[] answerSet = q.getPossibleAnswers();
+
+		answer1.setText(answerSet[0]);
+		answer2.setText(answerSet[1]);
+		answer3.setText(answerSet[2]);
+		answer4.setText(answerSet[3]);
 	}
 
 
@@ -84,7 +78,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		} else if(keyEvent.getCode() == KeyCode.RIGHT) {
 			field.updatePlayer(4);
 		}
-		updateFields();
+		updateQuestionFields();
 	}
 
 
