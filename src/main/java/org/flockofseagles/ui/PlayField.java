@@ -17,7 +17,6 @@ public class PlayField extends GridPane {
 	protected Question q;
 	ArrayList<Wall> walls = new ArrayList<>();
 	private List<Question> questionList;
-	private static OptionsLayoutController controller = new OptionsLayoutController();
 	protected boolean correctAnswer = false;
 
 

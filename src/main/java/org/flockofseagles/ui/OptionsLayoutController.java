@@ -33,7 +33,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 	public MenuBar menu;
 
 	public static PlayField field;
-	public ToggleGroup radioGroup;
+	private ToggleGroup radioGroup;
 
 
 	@Override
