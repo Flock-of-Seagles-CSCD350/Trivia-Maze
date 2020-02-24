@@ -5,7 +5,6 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Scanner;
 
 public abstract class ConsoleMenu {
 
@@ -13,20 +12,17 @@ public abstract class ConsoleMenu {
 	private final String      title;
 	@Getter
 	private final ConsoleMenu previousMenu;
-	@Getter
-	private final Scanner     input;
 
 	@Getter
 	private final ArrayList<MenuItem> menuItems = new ArrayList<>();
 
-	public ConsoleMenu(final String title, final ConsoleMenu previousMenu, final Scanner input) {
+	public ConsoleMenu(final String title, final ConsoleMenu previousMenu) {
 		this.title        = title;
 		this.previousMenu = previousMenu;
-		this.input        = input;
 	}
 
-	public ConsoleMenu(final String title, final Scanner input) {
-		this(title, null, input);
+	public ConsoleMenu(final String title) {
+		this(title, null);
 	}
 
 	public void open(final boolean sort) {

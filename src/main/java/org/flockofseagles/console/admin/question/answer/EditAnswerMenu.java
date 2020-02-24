@@ -5,14 +5,12 @@ import org.flockofseagles.console.ConsoleMenu;
 import org.flockofseagles.console.InputWrapper;
 import org.flockofseagles.console.MenuItem;
 
-import java.util.Scanner;
-
 public class EditAnswerMenu extends ConsoleMenu {
 
 	private final String answer;
 
-	public EditAnswerMenu(final String answer, final ConsoleMenu previousMenu, final Scanner input) {
-		super("Answer Editor", previousMenu, input);
+	public EditAnswerMenu(final String answer, final ConsoleMenu previousMenu) {
+		super("Answer Editor", previousMenu);
 		this.answer = answer;
 
 		addMenuItem(

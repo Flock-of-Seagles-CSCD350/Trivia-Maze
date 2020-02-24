@@ -1,24 +1,23 @@
 package org.flockofseagles.console.admin.question.answer;
 /* Created by GamerBah on 2/16/20 */
 
+import org.flockofseagles.Question;
 import org.flockofseagles.console.ConsoleMenu;
 import org.flockofseagles.console.MenuItem;
 
-import java.util.Scanner;
-
 public class ListAnswersMenu extends ConsoleMenu {
 
-	private final String question;
+	private final Question question;
 
-	public ListAnswersMenu(final String question, final ConsoleMenu previousMenu, final Scanner input) {
-		super("Editing Answers", previousMenu, input);
+	public ListAnswersMenu(final Question question, final ConsoleMenu previousMenu) {
+		super("Editing Answers", previousMenu);
 		this.question = question;
 
 		addMenuItem(
-				new MenuItem("Red", () -> new EditAnswerMenu("Red", this, input).open()),
-				new MenuItem("Blue", () -> new EditAnswerMenu("Blue", this, input).open()),
-				new MenuItem("Green", () -> new EditAnswerMenu("Green", this, input).open()),
-				new MenuItem("All of the above!", () -> new EditAnswerMenu("All of the above!", this, input).open())
+				new MenuItem("Red", () -> new EditAnswerMenu("Red", this).open()),
+				new MenuItem("Blue", () -> new EditAnswerMenu("Blue", this).open()),
+				new MenuItem("Green", () -> new EditAnswerMenu("Green", this).open()),
+				new MenuItem("All of the above!", () -> new EditAnswerMenu("All of the above!", this).open())
 		);
 	}
 

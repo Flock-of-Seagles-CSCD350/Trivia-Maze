@@ -1,24 +1,22 @@
 package org.flockofseagles.console.admin.question;
 /* Created by GamerBah on 2/16/20 */
 
+import org.flockofseagles.Question;
 import org.flockofseagles.console.ConsoleMenu;
-import org.flockofseagles.console.InputWrapper;
 import org.flockofseagles.console.MenuItem;
 import org.flockofseagles.console.admin.question.answer.ListAnswersMenu;
 
-import java.util.Scanner;
-
 public class EditQuestionMenu extends ConsoleMenu {
 
-	private String question;
+	private Question question;
 
-	public EditQuestionMenu(final String question, final ConsoleMenu previousMenu, final Scanner input) {
-		super("Question Editor", previousMenu, input);
+	public EditQuestionMenu(final Question question, final ConsoleMenu previousMenu) {
+		super("Question Editor", previousMenu);
 		this.question = question;
 
 		addMenuItem(
 				new MenuItem("Edit Question Text", this::editText),
-				new MenuItem("Edit Question Answers", () -> new ListAnswersMenu(question, this, input).open()),
+				new MenuItem("Edit Question Answers", () -> new ListAnswersMenu(question, this).open()),
 				new MenuItem("Delete Question", this::deleteQuestion)
 		);
 	}
@@ -30,7 +28,7 @@ public class EditQuestionMenu extends ConsoleMenu {
 
 	private void editText() {
 		// TODO: Use Question class
-		question = InputWrapper.readString("Enter new text for the question: ");
+		//question = InputWrapper.readString("Enter new text for the question: ");
 		System.out.println("Text successfully changed!");
 		this.open();
 	}

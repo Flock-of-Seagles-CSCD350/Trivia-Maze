@@ -8,7 +8,7 @@ public class TriviaMaze {
 
 	public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);
-		new AdminMenu(input).open();
+		new AdminMenu().open();
 	}
 
 }

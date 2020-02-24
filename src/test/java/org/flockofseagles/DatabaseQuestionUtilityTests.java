@@ -1,223 +1,367 @@
 package org.flockofseagles;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.*;
 
 import java.sql.*;
+import java.util.NoSuchElementException;
 import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DatabaseQuestionUtilityTests {
 
-    private static Connection connection = null;
+	private static Connection connection = null;
 
-    @BeforeEach
-    public void setup() {
-        getConnection();
-        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
-        db.addInitialQuestionSets();
-        db.createTables();
-    }
+	@BeforeEach
+	public void setup() {
+		getConnection();
+		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+		db.createTables();
+		db.addInitialQuestionSets();
+	}
 
-    @AfterEach
-    public void teardown() {
-        try {
-            DatabaseQuestionUtilityTests.connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+	@AfterEach
+	public void teardown() {
+		try {
+			DatabaseQuestionUtilityTests.connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
-    @AfterAll
-    public static void cleanup() {
+	@AfterAll
+	public static void cleanup() {
 
-        try {
-            connection = DriverManager.getConnection("jdbc:sqlite:questions.sqlite");
+		try {
+			connection = DriverManager.getConnection("jdbc:sqlite:questions.sqlite");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
+		try {
+			String sqlStatement = "DELETE FROM answer";
+			connection.prepareStatement(sqlStatement).execute();
 
-        try {
-            DatabaseQuestionUtilityTests.connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+			sqlStatement = "DELETE FROM question";
+			connection.prepareStatement(sqlStatement).execute();
 
-    @Test
-    public void databaseQuestionUtility_createTables_createsTables() {
+			DatabaseQuestionUtilityTests.connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
-        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+	@Test
+	@DisplayName("getQuestionId throws NoSuchElementException on no element")
+	public void databaseQuestionUtility_getQuestionId_notExists_throwsException() {
+		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+		assertThrows(NoSuchElementException.class, () -> db.getQuestionId("some question that doesn't exist"));
+	}
 
-        try {
+	@Test
+	@DisplayName("createTables correctly creates tables")
+	public void databaseQuestionUtility_createTables_createsTables() {
+		try {
 
-             ResultSet rs = connection.prepareStatement("SELECT * from question").executeQuery();
+			ResultSet rs = connection.prepareStatement("SELECT * from question").executeQuery();
 
-            ResultSetMetaData rsmd = rs.getMetaData();
+			ResultSetMetaData rsmd = rs.getMetaData();
 
-            assertEquals("question_id", rsmd.getColumnName(1));
-            assertEquals("question_string", rsmd.getColumnName(2));
-            assertEquals("question_category", rsmd.getColumnName(3));
+			assertEquals("question_id", rsmd.getColumnName(1));
+			assertEquals("question_string", rsmd.getColumnName(2));
+			assertEquals("question_category", rsmd.getColumnName(3));
 
-            rs = connection.prepareStatement("SELECT * from answer").executeQuery();
+			rs = connection.prepareStatement("SELECT * from answer").executeQuery();
 
-            rsmd = rs.getMetaData();
+			rsmd = rs.getMetaData();
 
-            assertEquals("answer_id", rsmd.getColumnName(1));
-            assertEquals("answer_string", rsmd.getColumnName(2));
+			assertEquals("answer_id", rsmd.getColumnName(1));
+			assertEquals("answer_string", rsmd.getColumnName(2));
 
 
-        } catch(SQLException e) {
-            System.out.println("error in databaseQuestionUtility_createTables_createsTables");
-            e.printStackTrace();
-        }
-    }
+		} catch (SQLException e) {
+			System.out.println("error in databaseQuestionUtility_createTables_createsTables");
+			e.printStackTrace();
+		}
+	}
 
-    @Test
-    public void databaseQuestionUtility_addQuestion_addsQuestion() {
-        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+	@Test
+	@DisplayName("addQuestion correctly adds a new question")
+	public void databaseQuestionUtility_addQuestion_addsQuestion() {
+		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
-        db.createTables();
+		var randomAnswerArray = new String[4];
 
-        var randomAnswerArray = new String[4];
+		var rand = new Random();
 
-        var rand = new Random();
+		for (int i = 0; i < randomAnswerArray.length; i++) {
+			randomAnswerArray[i] = Integer.toString(rand.nextInt());
+		}
 
-        for(int i = 0; i < randomAnswerArray.length; i++) {
-            randomAnswerArray[i] = Integer.toString(rand.nextInt());
-        }
+		String randomNumString = Integer.toString(new Random().nextInt());
+		int    initialRowCount = 0;
 
-        String randomNumString = Integer.toString(new Random().nextInt());
-        int initialRowCount = 0;
+		try {
 
-        try {
+			String sqlStatement = "SELECT COUNT(*) FROM question";
 
-            String sqlStatement = "SELECT COUNT(*) FROM question";
+			ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
 
-            ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+			//Storing the number of results in the initialRowCount variable, for later comparison with the count after adding a new
+			// question
+			while (rs.next()) {
+				initialRowCount = rs.getInt(1);
+			}
 
-            //Storing the number of results in the initialRowCount variable, for later comparison with the count after adding a new question
-            while(rs.next())
-                initialRowCount = rs.getInt(1);
 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
+		try {
+			db.addQuestion(randomNumString, randomAnswerArray);
 
-        try {
-            db.addQuestion(randomNumString, randomAnswerArray);
+			String sqlStatement = String.format("SELECT * from question WHERE question_string = %s", randomNumString);
 
-            String sqlStatement = String.format("SELECT * from question WHERE question_string = %s", randomNumString);
+			ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
 
-            ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+			int count = 0;
 
-            int count = 0;
+			while (rs.next()) {
+				count++;
+			}
 
-            while(rs.next())
-                count++;
 
+			assertNotEquals(initialRowCount, count);
 
-            assertNotEquals(initialRowCount, count);
+		} catch (SQLException e) {
+			System.out.println("error in databaseQuestionUtility_addQuestion_addsQuestion");
+			e.printStackTrace();
+		}
+	}
 
-        } catch(SQLException e) {
-            System.out.println("error in databaseQuestionUtility_addQuestion_addsQuestion");
-            e.printStackTrace();
-        }
-    }
+	@Test
+	@DisplayName("removeQuestion removes all answers and question")
+	public void databaseQuestionUtility_removeQuestion_removesQuestion() {
+		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
-    @Test
-    public void databaseQuestionUtility_addQuestion_addsAnswers() {
-        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+		var randomAnswerArray = new String[4];
 
-        var rand = new Random();
+		var rand = new Random();
 
-        String randomNumString = Integer.toString(rand.nextInt());
-        int initialRowCount = 0;
+		for (int i = 0; i < randomAnswerArray.length; i++) {
+			randomAnswerArray[i] = Integer.toString(rand.nextInt());
+		}
 
-        var randomAnswerArray = new String[4];
+		String randomNumString = Integer.toString(new Random().nextInt());
 
-        for(int i = 0; i < randomAnswerArray.length; i++) {
-            randomAnswerArray[i] = Integer.toString(rand.nextInt());
-        }
+		db.addQuestion(randomNumString, randomAnswerArray);
+		int id = db.getQuestionId(randomNumString);
 
-        try {
+		db.removeQuestion(randomNumString);
 
-            String sqlStatement = "SELECT COUNT(*) FROM question";
+		assertThrows(NoSuchElementException.class, () -> db.getQuestionId(randomNumString));
+		try {
+			String    sqlStatement = "SELECT COUNT(*) FROM answer WHERE question_id = " + id;
+			ResultSet rs           = connection.prepareStatement(sqlStatement).executeQuery();
+			int       count        = rs.getInt(1);
 
-            ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+			assertEquals(0, count);
+		} catch (SQLException e) {
+			System.out.println("error in databaseQuestionUtility_removeQuestion_removesQuestion");
+			e.printStackTrace();
+		}
+	}
 
-            //Storing the number of results in the initialRowCount variable, for later comparison with the count after adding a new question
-            while(rs.next())
-                initialRowCount = rs.getInt(1);
+	@Test
+	@DisplayName("editQuestion edits question text")
+	public void databaseQuestionUtility_editQuestion_editsQuestionText() {
+		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
+		var randomAnswerArray = new String[4];
 
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
+		var rand = new Random();
 
-        try {
+		for (int i = 0; i < randomAnswerArray.length; i++) {
+			randomAnswerArray[i] = Integer.toString(rand.nextInt());
+		}
 
-            String sqlStatement = "SELECT COUNT(*) FROM answer";
+		String randomNumString = Integer.toString(new Random().nextInt());
 
-            ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+		db.addQuestion(randomNumString, randomAnswerArray);
+		db.editQuestion(randomNumString, "new question");
 
-            //Storing the number of results in the initialRowCount variable, for later comparison with the count after adding a new question
-            while(rs.next())
-                initialRowCount = rs.getInt(1);
+		try {
+			String    sqlStatement = "SELECT question_string FROM question WHERE question_id = " + db.getQuestionId("new question");
+			ResultSet rs           = connection.prepareStatement(sqlStatement).executeQuery();
 
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
+			assertEquals("new question", rs.getString(1));
+		} catch (SQLException e) {
+			System.out.println("error in databaseQuestionUtility_editQuestion_editsQuestionText");
+			e.printStackTrace();
+		}
+	}
 
-        try {
-            db.addQuestion(randomNumString, randomAnswerArray);
+	@Test
+	@DisplayName("addQuestion adds all passed answers")
+	public void databaseQuestionUtility_addQuestion_addsAnswers() {
+		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
-            String sqlStatement = String.format("SELECT * from answer", randomNumString);
+		var rand = new Random();
 
-            ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+		String randomNumString = Integer.toString(rand.nextInt());
+		int    initialRowCount = 0;
 
-            int count = 0;
+		var randomAnswerArray = new String[4];
 
-            while(rs.next())
-                count++;
+		for (int i = 0; i < randomAnswerArray.length; i++) {
+			randomAnswerArray[i] = Integer.toString(rand.nextInt());
+		}
 
-            assertEquals(initialRowCount + randomAnswerArray.length, count);
+		try {
+			db.addQuestion(randomNumString, randomAnswerArray);
 
-        } catch(SQLException e) {
-            System.out.println("error in databaseQuestionUtility_addQuestion_addsQuestion");
-            e.printStackTrace();
-        }
-    }
+			String    sqlStatement = "SELECT COUNT(*) FROM answer WHERE question_id = " + db.getQuestionId(randomNumString);
+			ResultSet rs           = connection.prepareStatement(sqlStatement).executeQuery();
 
-    @Test
-    public void databaseQuestionUtility_loadQuestionSet_loadsQuestionsIntoArray() {
-        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+			int count = rs.getInt(1);
 
-        var questionSet = db.loadQuestionSet();
+			assertEquals(initialRowCount + randomAnswerArray.length, count);
 
-        assertNotEquals(0, questionSet.length);
+		} catch (SQLException e) {
+			System.out.println("error in databaseQuestionUtility_addQuestion_addsQuestion");
+			e.printStackTrace();
+		}
+	}
 
-        for(int i = 0; i < questionSet.length; i++) {
-            assertFalse(questionSet[i] == null && questionSet[i].getQuestion() == null && questionSet[i].getQuestion().isEmpty());
+	@Test
+	@DisplayName("addAnswer correctly adds new answer for question")
+	public void databaseQuestionUtility_addAnswer_addsAnswerToQuestion() {
+		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
-            var answersArr = questionSet[i].getPossibleAnswers();
+		var randomAnswerArray = new String[3];
 
-            for(int j = 0; j < answersArr.length; j++) {
-                assertFalse(answersArr[j] == null &&answersArr[j].isEmpty());
-            }
-        }
-    }
+		var rand = new Random();
 
-    private void getConnection() {
-        try {
-            connection = DriverManager.getConnection("jdbc:sqlite:questions.sqlite");
+		for (int i = 0; i < randomAnswerArray.length; i++) {
+			randomAnswerArray[i] = Integer.toString(rand.nextInt());
+		}
 
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
-    }
+		String randomNumString = Integer.toString(new Random().nextInt());
+
+		try {
+			db.addQuestion(randomNumString, randomAnswerArray);
+			db.addAnswer(randomNumString, "answer");
+
+			String sqlStatement = String.format("SELECT * from answer WHERE question_id = '%s'", db.getQuestionId(randomNumString));
+
+			ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+
+			int count = 0;
+			while (rs.next()) {
+				count++;
+			}
+
+			assertEquals(4, count);
+		} catch (SQLException e) {
+			System.out.println("error in databaseQuestionUtility_addAnswer_addsAnswer");
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	@DisplayName("removeAnswer removes specified answer")
+	public void databaseQuestionUtility_removeAnswer_removesAnswerFromQuestion() {
+		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+
+		var randomAnswerArray = new String[4];
+
+		var rand = new Random();
+
+		for (int i = 0; i < randomAnswerArray.length; i++) {
+			randomAnswerArray[i] = Integer.toString(rand.nextInt());
+		}
+
+		String randomNumString = Integer.toString(new Random().nextInt());
+
+		db.addQuestion(randomNumString, randomAnswerArray);
+		int id = db.getQuestionId(randomNumString);
+
+		// remove last item in answers
+		db.removeAnswer(randomNumString, randomAnswerArray[3]);
+
+		try {
+			String    sqlStatement = "SELECT COUNT(*) FROM answer WHERE question_id = " + id;
+			ResultSet rs           = connection.prepareStatement(sqlStatement).executeQuery();
+			int       count        = rs.getInt(1);
+
+			assertEquals(3, count);
+		} catch (SQLException e) {
+			System.out.println("error in databaseQuestionUtility_removeQuestion_removesQuestion");
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	@DisplayName("editAnswer edits answer text")
+	public void databaseQuestionUtility_editAnswer_editsAnswerText() {
+		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+
+		var randomAnswerArray = new String[4];
+
+		var rand = new Random();
+
+		for (int i = 0; i < randomAnswerArray.length; i++) {
+			randomAnswerArray[i] = Integer.toString(rand.nextInt());
+		}
+
+		String randomNumString = Integer.toString(new Random().nextInt());
+
+		db.addQuestion(randomNumString, randomAnswerArray);
+
+		// set 4th item in answers to "new answer"
+		db.editAnswer(randomNumString, randomAnswerArray[3], "new answer");
+
+		try {
+			String sqlStatement =
+					String.format("SELECT COUNT(*) FROM answer WHERE question_id = '%s' AND answer_string = 'new answer'",
+					              db.getQuestionId(randomNumString));
+			ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+
+			assertEquals(1, rs.getInt(1));
+		} catch (SQLException e) {
+			System.out.println("error in databaseQuestionUtility_editQuestion_editsQuestionText");
+			e.printStackTrace();
+		}
+	}
+
+	@Test
+	@DisplayName("loadQuestionSet properly loads all questions")
+	public void databaseQuestionUtility_loadQuestionSet_loadsQuestionsIntoArray() {
+		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+
+		var questionSet = db.loadQuestionSet();
+
+		assertNotEquals(0, questionSet.length);
+
+		for (Question question : questionSet) {
+			assert question != null;
+
+			var answersArr = question.getPossibleAnswers();
+
+			for (String s : answersArr) {
+				assert s != null;
+			}
+		}
+	}
+
+	private void getConnection() {
+		try {
+			connection = DriverManager.getConnection("jdbc:sqlite:questions.sqlite");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 }
