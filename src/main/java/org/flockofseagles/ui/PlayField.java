@@ -7,14 +7,19 @@ import javafx.scene.layout.GridPane;
 import org.flockofseagles.DatabaseQuestionUtility;
 import org.flockofseagles.Question;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlayField extends GridPane {
 	protected Canvas[][] field;
 	protected Player player = new Player(0 , 0);
+	protected Question q;
 	ArrayList<Wall> walls = new ArrayList<>();
 	private List<Question> questionList;
+	private static OptionsLayoutController controller = new OptionsLayoutController();
+	protected boolean correctAnswer = false;
+
 
 	public PlayField(Canvas canvas) {
 		super();
@@ -65,22 +70,28 @@ public class PlayField extends GridPane {
 				}
 
 				// if current row is an even number
-				if((i % 2) == 0 && j + 1 < this.field.length) {
+				if((i % 2) == 0 && j + 1 < this.field.length)
+				{
 					j++;
 					canvas = this.field[i][j];
 					w = new Wall(i, j);
 					walls.add(w);
 					w.drawVert(canvas);
-				} else if((j % 2) == 0 && (i % 2) == 1) {
+				}
+				else if((j % 2) == 0 && (i % 2) == 1)
+				{
 					canvas = this.field[i][j];
 					w = new Wall(i, j);
 					walls.add(w);
 					w.drawHorz(canvas);
-				} else if((j % 2) == 1 && (i % 2) == 1) {
+				}
+				else if((j % 2) == 1 && (i % 2) == 1)
+				{
 					canvas = this.field[i][j];
 					w = new Wall(i,j);
 					w.drawMid(canvas);
-				} else {
+				}
+				else {
 					canvas = this.field[i][j];
 				}
 			}
@@ -88,65 +99,94 @@ public class PlayField extends GridPane {
 
 	}
 
-	public void updatePlayer(int i) {
+	public void updatePlayer(int i)
+	{
 		Canvas canvas = getCanvas(player.xVal, player.yVal);
 		Wall w;
 
 		//move up
-		if(i == 1) {
-			if(player.xVal == 0) {
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Invalid Move");
-				alert.setHeaderText("Cannot move up!");
-				alert.show();
-			} else {
-				//w = getWall(player.xVal - 1, player.yVal);
+		if(i == 1)
+		{
+			w = getWall(player.xVal - 1, player.yVal);
+
+			if(correctAnswer)
+			{
+				w.isPassable = true;
 				clearCanvas(canvas);
 				canvas = this.field[player.xVal - 2][player.yVal];
 				player.draw(canvas);
 				player.xVal = player.xVal - 2;
 			}
-		} else if(i == 2) { //move down
-			if(player.xVal == this.field.length - 1) {
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Invalid Move");
-				alert.setHeaderText("Cannot move down");
-				alert.show();
-			} else {
-				//w = getWall(player.xVal - 1, player.yVal);
+			else
+			{
+				canvas = this.field[player.xVal - 1][player.yVal];
+				w.isLocked = true;
+				w.drawHorzLocked(canvas);
+			}
+		}
+
+		else if(i == 2)
+		{	//move down
+
+			w = getWall(player.xVal + 1, player.yVal);
+
+			if(correctAnswer)
+			{
+				w.isPassable = true;
 				clearCanvas(canvas);
 				canvas = this.field[player.xVal + 2][player.yVal];
 				player.draw(canvas);
 				player.xVal = player.xVal + 2;
 			}
-		} else if(i == 3) { //move left
-			if(player.yVal == 0) {
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Invalid Move");
-				alert.setHeaderText("Cannot move left");
-				alert.show();
-			} else {
-				//w = getWall(player.xVal - 1, player.yVal);
+			else
+			{
+				canvas = this.field[player.xVal + 1][player.yVal];
+				w.isLocked = true;
+				w.drawHorzLocked(canvas);
+			}
+		}
+
+		else if(i == 3)
+		{ //move left
+
+			w = getWall(player.xVal, player.yVal - 1);
+
+			if(correctAnswer)
+			{
+				w.isPassable = true;
 				clearCanvas(canvas);
 				canvas = this.field[player.xVal][player.yVal - 2];
 				player.draw(canvas);
 				player.yVal = player.yVal - 2;
 			}
-		} else if(i == 4) { //move right
-			if(player.yVal == this.field.length - 1) {
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Invalid Move");
-				alert.setHeaderText("Cannot move right!");
-				alert.show();
-			} else {
-				//w = getWall(player.xVal + 1, player.yVal);
+			else
+			{
+				canvas = this.field[player.xVal][player.yVal - 1];
+				w.isLocked = true;
+				w.drawVertLocked(canvas);
+			}
+		}
+
+		else if(i == 4)
+		{ //move right
+
+			w = getWall(player.xVal, player.yVal + 1);
+
+			if(correctAnswer)
+			{
+				w.isPassable = true;
 				clearCanvas(canvas);
 				canvas = this.field[player.xVal][player.yVal + 2];
 				player.draw(canvas);
 				player.yVal = player.yVal + 2;
 			}
+			else
+			{
+				canvas = this.field[player.xVal][player.yVal + 1];
+				w.isLocked = true;
+				w.drawVertLocked(canvas);
+			}
 		}
-
 	}
 
 	public void clearCanvas(Canvas canvas) {
@@ -170,4 +210,11 @@ public class PlayField extends GridPane {
 	public Question getQuestion() {
 		return this.questionList.remove(0);
 	}
+
+	public int getLength()
+	{
+		return this.field.length;
+	}
+
+
 }

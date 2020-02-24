@@ -1,19 +1,25 @@
 package org.flockofseagles.ui;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.stage.*;
 import org.flockofseagles.Question;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -22,28 +28,17 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 	public StackPane stPane;
 	public Canvas gameCanvas = new Canvas();
 	@FXML
-	public Label txt_question;
-	@FXML
-	public VBox vbox_answers;
-	@FXML
-	public RadioButton answer1;
-	@FXML
-	public RadioButton answer2;
-	@FXML
-	public RadioButton answer3;
-	@FXML
-	public RadioButton answer4;
-	@FXML
 	public AnchorPane pane;
 	@FXML
 	public MenuBar menu;
+
 	public static PlayField field;
-	@FXML
-	public Label lbl_info;
+	public ToggleGroup radioGroup;
 
 
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public void initialize(URL location, ResourceBundle resources)
+	{
 		field = new PlayField(gameCanvas);
 		field.initializePlayField();
 		field.setMaze();
@@ -51,35 +46,199 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		stPane.setBackground(new Background(new BackgroundImage(img, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.REPEAT,
 				BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
 		stPane.getChildren().add(field);
-
-		txt_question.setWrapText(true);
 	}
 
-	private void updateQuestionFields() {
-		Question q = field.getQuestion();
-		txt_question.setText(q.getQuestion());
+	public void onKeyPressed(KeyEvent keyEvent)
+	{
+		Wall w;
 
-		String[] answerSet = q.getPossibleAnswers();
+		if(new KeyCodeCombination(KeyCode.UP).match(keyEvent))
+		{
+			if(field.player.xVal == 0)
+			{
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Out of bounds!");
+				alert.setHeaderText("Cannot move up!");
+				alert.show();
+			}
+			else
+			{
+				try
+				{
+					w = field.getWall(field.player.xVal - 1, field.player.yVal);
 
-		answer1.setText(answerSet[0]);
-		answer2.setText(answerSet[1]);
-		answer3.setText(answerSet[2]);
-		answer4.setText(answerSet[3]);
-	}
+					if (w.isPassable)
+					{
+						field.correctAnswer = true;
+						field.updatePlayer(1);
+					}
+					else if (w.isLocked)
+					{
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("False Start!");
+						alert.setHeaderText("That door is locked! Try another one.");
+						alert.show();
+					} else
+					{
+						openPopUp();
+						field.updatePlayer(1);
+					}
+					field.correctAnswer = false;
 
-
-	public void onKeyPressed(KeyEvent keyEvent) {
-		if(new KeyCodeCombination(KeyCode.UP).match(keyEvent)) {
-			field.updatePlayer(1);
-		} else if(keyEvent.getCode() == KeyCode.DOWN) {
-			field.updatePlayer(2);
-		} else if(keyEvent.getCode() == KeyCode.LEFT) {
-			field.updatePlayer(3);
-		} else if(keyEvent.getCode() == KeyCode.RIGHT) {
-			field.updatePlayer(4);
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
 		}
-		updateQuestionFields();
+
+
+		else if(keyEvent.getCode() == KeyCode.DOWN)
+		{
+			if(field.player.xVal == (field.getLength() - 1))
+			{
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Out of bounds!");
+				alert.setHeaderText("Cannot move down!");
+				alert.show();
+			}
+			else
+			{
+				try
+				{
+					w = field.getWall(field.player.xVal + 1, field.player.yVal);
+
+					if (w.isPassable)
+					{
+						field.correctAnswer = true;
+						field.updatePlayer(2);
+					}
+					else if (w.isLocked)
+					{
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("False Start!");
+						alert.setHeaderText("That door is locked! Try another one.");
+						alert.show();
+					}
+					else
+					{
+						openPopUp();
+						field.updatePlayer(2);
+					}
+					field.correctAnswer = false;
+
+
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+
+
+		else if(keyEvent.getCode() == KeyCode.LEFT)
+		{
+
+			if(field.player.yVal == 0)
+			{
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Out of bounds!");
+				alert.setHeaderText("Cannot move left");
+				alert.show();
+			}
+			else
+			{
+				try
+				{
+					w = field.getWall(field.player.xVal, field.player.yVal - 1);
+
+					if (w.isPassable)
+					{
+						field.correctAnswer = true;
+						field.updatePlayer(3);
+					}
+					else if (w.isLocked)
+					{
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("False Start!");
+						alert.setHeaderText("That door is locked! Try another one.");
+						alert.show();
+					}
+					else
+					{
+						openPopUp();
+						field.updatePlayer(3);
+					}
+					field.correctAnswer = false;
+
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+
+
+		else if(keyEvent.getCode() == KeyCode.RIGHT)
+		{
+			if(field.player.yVal == (field.getLength() - 1))
+			{
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Out of bounds!");
+				alert.setHeaderText("Cannot move right");
+				alert.show();
+			}
+			else
+			{
+				try
+				{
+					w = field.getWall(field.player.xVal, field.player.yVal + 1);
+
+					if (w.isPassable)
+					{
+						field.correctAnswer = true;
+						field.updatePlayer(4);
+					}
+					else if (w.isLocked)
+					{
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle("False Start!");
+						alert.setHeaderText("That door is locked! Try another one.");
+						alert.show();
+					}
+					else
+					{
+						openPopUp();
+						field.updatePlayer(4);
+					}
+					field.correctAnswer = false;
+
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
 	}
+
+	public void openPopUp() throws IOException
+	{
+		FXMLLoader popUpLoader = new FXMLLoader(getClass().getClassLoader().getResource("popup.fxml"));
+		Parent root = popUpLoader.load();
+		PopUpController controller = popUpLoader.getController();
+		controller.setUp();
+		Stage stage = new Stage();
+		stage.setTitle("PopUp tester");
+		stage.initStyle(StageStyle.UNDECORATED);
+		Scene scene = new Scene(root);
+		stage.setScene(scene);
+		stage.showAndWait();
+	}
+
+
 
 
 }
