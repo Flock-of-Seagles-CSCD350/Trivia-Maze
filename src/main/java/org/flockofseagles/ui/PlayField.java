@@ -19,6 +19,9 @@ public class PlayField extends GridPane {
 	public PlayField(Canvas canvas) {
 		super();
 
+		if(canvas == null)
+			throw new IllegalArgumentException("Null canvas object passed into PlayField Constructor");
+
 		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 		db.addInitialQuestionSets();
 		questionList = db.loadQuestionSet();
@@ -27,7 +30,6 @@ public class PlayField extends GridPane {
 		this.setHeight(canvas.getHeight());
 		this.field = initializePlayField();
 	}
-
 
 	public Canvas[][] initializePlayField() {
 		int rows = 9;

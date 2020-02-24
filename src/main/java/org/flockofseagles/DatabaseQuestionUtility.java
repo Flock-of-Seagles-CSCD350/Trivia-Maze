@@ -11,6 +11,11 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
     private static Connection connection = null;
 
+    public DatabaseQuestionUtility() {
+        createTables();
+        addInitialQuestionSets();
+    }
+
     @Override
     public List<Question> loadQuestionSet() {
         Connection connection = getConnection();

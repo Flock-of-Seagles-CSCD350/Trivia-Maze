@@ -38,4 +38,11 @@ public class PlayFieldTests {
     public void playField_getWall_returnsNull_onIncorrectCoordinates() {
         assertNull(p.getWall(1999, 14444));
     }
+
+    @Test
+    public void playField_Constructor_throwsException_onNullArgument() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            PlayField testField = new PlayField(null);
+        });
+    }
 }
