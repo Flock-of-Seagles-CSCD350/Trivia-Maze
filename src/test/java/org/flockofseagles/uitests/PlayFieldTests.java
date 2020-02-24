@@ -36,8 +36,6 @@ public class PlayFieldTests {
 
     @Test
     public void playField_getWall_returnsNull_onIncorrectCoordinates() {
-        assertThrows(IllegalArgumentException.class, () -> {
-
-        });
+        assertNull(p.getWall(1999, 14444));
     }
 }

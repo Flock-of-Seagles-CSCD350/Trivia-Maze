@@ -17,8 +17,8 @@ public class DatabaseQuestionUtilityTests {
     public void setup() {
         getConnection();
         DatabaseQuestionUtility db = new DatabaseQuestionUtility();
-        db.addInitialQuestionSets();
         db.createTables();
+        db.addInitialQuestionSets();
     }
 
     @AfterEach
