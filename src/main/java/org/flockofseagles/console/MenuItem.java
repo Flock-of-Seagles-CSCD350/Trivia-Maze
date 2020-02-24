@@ -11,6 +11,11 @@ public class MenuItem implements MenuRunnable, Comparable<MenuItem> {
 		this.event = event;
 	}
 
+	public MenuItem(final String title) {
+		this(title, () -> {
+		});
+	}
+
 	public String getTitle() {
 		return title;
 	}

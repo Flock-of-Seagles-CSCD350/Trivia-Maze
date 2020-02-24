@@ -13,6 +13,8 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
 	@Override
 	public Question[] loadQuestionSet() {
+		createTables();
+
 		Connection connection  = getConnection();
 		var        questionSet = new Question[10];
 

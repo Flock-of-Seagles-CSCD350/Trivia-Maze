@@ -14,4 +14,9 @@ public class AdminMenu extends ConsoleMenu {
 		addMenuItem(new MenuItem("Exit", () -> System.exit(0)));
 	}
 
+	@Override
+	public ConsoleMenu reload() {
+		return this;
+	}
+
 }

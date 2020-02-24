@@ -25,7 +25,7 @@ public abstract class ConsoleMenu {
 		this(title, null);
 	}
 
-	public void open(final boolean sort) {
+	public int open(final boolean sort) {
 		if (sort) {
 			menuItems.sort(MenuItem::compareTo);
 		}
@@ -38,7 +38,7 @@ public abstract class ConsoleMenu {
 		System.out.println("\u2B16 " + title + " \u2B17");
 		System.out.print(getDescription());
 		menuItems.forEach(menuItem -> {
-			if (menuItem.getTitle().equals("Go Back")) {
+			if (menuItem.getTitle().equals("Go Back") || menuItem.getTitle().equals("Add New Item")) {
 				System.out.println();
 			}
 			int index = menuItems.indexOf(menuItem) + 1;
@@ -46,11 +46,14 @@ public abstract class ConsoleMenu {
 		});
 		int choice = InputWrapper.readMenuChoice("Make a selection: ", menuItems.size());
 		menuItems.get(choice - 1).select();
+		return choice;
 	}
 
-	public void open() {
-		open(false);
+	public int open() {
+		return open(false);
 	}
+
+	public abstract ConsoleMenu reload();
 
 	protected void addMenuItem(final MenuItem menuItem) {
 		menuItems.add(menuItem);
