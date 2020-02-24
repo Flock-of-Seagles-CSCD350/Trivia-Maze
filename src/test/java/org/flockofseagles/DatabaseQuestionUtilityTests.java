@@ -35,12 +35,18 @@ public class DatabaseQuestionUtilityTests {
 
         try {
             connection = DriverManager.getConnection("jdbc:sqlite:questions.sqlite");
-
         } catch(SQLException e) {
             e.printStackTrace();
         }
 
         try {
+            String sqlStatement = "DELETE FROM answer";
+
+            connection.prepareStatement(sqlStatement).execute();
+
+            sqlStatement = "DELETE FROM question";
+            connection.prepareStatement(sqlStatement).execute();
+
             DatabaseQuestionUtilityTests.connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -79,8 +85,6 @@ public class DatabaseQuestionUtilityTests {
     @Test
     public void databaseQuestionUtility_addQuestion_addsQuestion() {
         DatabaseQuestionUtility db = new DatabaseQuestionUtility();
-
-        db.createTables();
 
         var randomAnswerArray = new String[4];
 

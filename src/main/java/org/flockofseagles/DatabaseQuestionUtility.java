@@ -47,6 +47,8 @@ public class DatabaseQuestionUtility implements QuestionUtility {
             e.printStackTrace();
         }
 
+        closeConnection();
+
         return questionSet;
     }
 
@@ -83,6 +85,8 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         } catch(SQLException e) {
             e.printStackTrace();
         }
+
+        closeConnection();
     }
 
     public void createTables() {
@@ -103,7 +107,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
             e.printStackTrace();
         }
 
-
+        closeConnection();
     }
 
     public void addInitialQuestionSets() {
@@ -174,6 +178,8 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
             this.addQuestion(questionSetList.get(questionIndex), answersArr);
         }
+
+        closeConnection();
     }
 
     private Connection getConnection() {
@@ -186,5 +192,13 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         }
 
         return connection;
+    }
+
+    private void closeConnection() {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
