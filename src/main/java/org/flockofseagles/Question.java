@@ -1,13 +1,20 @@
 package org.flockofseagles;
 
-public class Question {
-    private String[] possibleAnswers;
-    private String question;
+import lombok.Getter;
+import lombok.Setter;
 
-    public Question(final String[] answers, final int correctAnswerIndex, final String question) {
-        this.possibleAnswers = answers;
-        this.question = question;
-    }
+public class Question {
+
+	@Getter
+	private String[] possibleAnswers;
+	@Getter
+	@Setter
+	private String   question;
+
+	public Question(final String[] answers, final int correctAnswerIndex, final String question) {
+		this.possibleAnswers = answers;
+		this.question        = question;
+	}
 
     public String[] getPossibleAnswers() {
         return this.possibleAnswers;
@@ -16,5 +23,4 @@ public class Question {
     public String getQuestion() {
         return this.question;
     }
-
 }

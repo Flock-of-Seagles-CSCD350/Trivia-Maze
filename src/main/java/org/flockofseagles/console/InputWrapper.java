@@ -10,9 +10,9 @@ public final class InputWrapper {
 	public static int readMenuChoice(final String message, final int upperBound) {
 		System.out.print(message);
 		String choice = INPUT.next();
-		while (!choice.matches("[1-9]+") || (choice.matches("[1-9]+")
-		                                     && Integer.parseInt(choice) <= 0 || (Integer.parseInt(choice) > upperBound
-		                                                                          && upperBound != -1))) {
+		while (!choice.matches("[0-9]+") || (choice.matches("[0-9]+")
+		                                     && Integer.parseInt(choice) < 0
+		                                     || (Integer.parseInt(choice) > upperBound && upperBound != -1))) {
 			System.out.println("\u274C That's not a valid selection! \u274C\n");
 			System.out.print(message);
 			choice = INPUT.next();

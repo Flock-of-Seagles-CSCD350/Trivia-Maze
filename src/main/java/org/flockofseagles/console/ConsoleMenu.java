@@ -5,7 +5,6 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Scanner;
 
 public abstract class ConsoleMenu {
 
@@ -13,23 +12,20 @@ public abstract class ConsoleMenu {
 	private final String      title;
 	@Getter
 	private final ConsoleMenu previousMenu;
-	@Getter
-	private final Scanner     input;
 
 	@Getter
 	private final ArrayList<MenuItem> menuItems = new ArrayList<>();
 
-	public ConsoleMenu(final String title, final ConsoleMenu previousMenu, final Scanner input) {
+	public ConsoleMenu(final String title, final ConsoleMenu previousMenu) {
 		this.title        = title;
 		this.previousMenu = previousMenu;
-		this.input        = input;
 	}
 
-	public ConsoleMenu(final String title, final Scanner input) {
-		this(title, null, input);
+	public ConsoleMenu(final String title) {
+		this(title, null);
 	}
 
-	public void open(final boolean sort) {
+	public int open(final boolean sort) {
 		if (sort) {
 			menuItems.sort(MenuItem::compareTo);
 		}
@@ -42,7 +38,7 @@ public abstract class ConsoleMenu {
 		System.out.println("\u2B16 " + title + " \u2B17");
 		System.out.print(getDescription());
 		menuItems.forEach(menuItem -> {
-			if (menuItem.getTitle().equals("Go Back")) {
+			if (menuItem.getTitle().equals("Go Back") || menuItem.getTitle().equals("Add New Item")) {
 				System.out.println();
 			}
 			int index = menuItems.indexOf(menuItem) + 1;
@@ -50,11 +46,14 @@ public abstract class ConsoleMenu {
 		});
 		int choice = InputWrapper.readMenuChoice("Make a selection: ", menuItems.size());
 		menuItems.get(choice - 1).select();
+		return choice;
 	}
 
-	public void open() {
-		open(false);
+	public int open() {
+		return open(false);
 	}
+
+	public abstract ConsoleMenu reload();
 
 	protected void addMenuItem(final MenuItem menuItem) {
 		menuItems.add(menuItem);
