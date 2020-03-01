@@ -75,11 +75,12 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
 			ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
 
-
-			return rs.getInt(1);
+			if(rs.next())
+				return rs.getInt(1);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+
 		}
 		throw new NoSuchElementException("question does not exist");
 	}
@@ -93,7 +94,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 					question);
 
 			if(connection.prepareStatement(sqlStatement).executeQuery().getInt(1) > 0)
-				throw new IllegalArgumentException("Duplicate question DatabaseQuestionsUtility addQuestion");
+				return;
 
 			sqlStatement = String.format("INSERT INTO question(question_string, question_category) values('%s', '%s')",
 			                                    question,
@@ -225,7 +226,8 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 			                            "answer_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
 			                            "answer_string TEXT NOT NULL," +
 			                            "question_id INTEGER NOT NULL," +
-			                            "FOREIGN KEY(question_id) REFERENCES question(question_id))").execute();
+			                            "FOREIGN KEY(question_id) REFERENCES question(question_id)" +
+										"ON DELETE CASCADE)").execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

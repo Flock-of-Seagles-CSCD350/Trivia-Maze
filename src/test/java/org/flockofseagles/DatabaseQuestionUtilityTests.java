@@ -21,11 +21,23 @@ public class DatabaseQuestionUtilityTests {
 
     @BeforeEach
     public void setup() {
+		db.addInitialQuestionSets();
         getConnection();
     }
 
 	@AfterEach
 	public void teardown() {
+		try {
+			String sqlStatement = "DELETE FROM answer";
+
+			connection.prepareStatement(sqlStatement).execute();
+
+			sqlStatement = "DELETE FROM question";
+			connection.prepareStatement(sqlStatement).execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 		try {
 			connection.close();
 		} catch(SQLException e) {
@@ -59,7 +71,7 @@ public class DatabaseQuestionUtilityTests {
 	@Test
 	@DisplayName("getQuestionId throws NoSuchElementException on no element")
 	public void databaseQuestionUtility_getQuestionId_notExists_throwsException() {
-		assertThrows(NoSuchElementException.class, () -> db.getQuestionId("some question that doesn't exist"));
+		assertThrows(NoSuchElementException.class, () -> db.getQuestionId("some question that doesnt exist"));
 	}
 
 	@Test
@@ -339,6 +351,8 @@ public class DatabaseQuestionUtilityTests {
 
         questionSet.forEach(question -> {
 			assertFalse(question == null && question.getQuestion() == null && question.getQuestion().isEmpty());
+
+			System.out.println(question.getQuestion());
 
 			for(String a : question.getPossibleAnswers())
 				assertNotNull(a);
