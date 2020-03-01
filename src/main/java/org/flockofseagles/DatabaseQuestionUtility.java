@@ -38,10 +38,9 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
 				ResultSet answerResultSet = connection.prepareStatement(answerSqlStatement).executeQuery();
 
-                for (int j = 0; j < answerArr.length; j++) {
-                    answerResultSet.next();
-                    String answer = answerResultSet.getString(1);
-                    answerArr[j] = answer;
+                for (int j = 0; j < answerArr.length && answerResultSet.next(); j++) {
+					String answer = answerResultSet.getString(1);
+					answerArr[j] = answer;
                 }
 
                 String questionString = rs.getString(2);
@@ -87,7 +86,6 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
 			connection.prepareStatement(sqlStatement).execute();
 
-			System.out.println("question added");
         } catch(SQLException e) {
             e.printStackTrace();
         }

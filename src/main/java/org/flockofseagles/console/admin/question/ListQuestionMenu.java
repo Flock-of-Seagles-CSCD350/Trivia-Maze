@@ -7,6 +7,8 @@ import org.flockofseagles.console.MenuItem;
 
 import java.util.Arrays;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 public class ListQuestionMenu extends ConsoleMenu {
 
@@ -14,7 +16,7 @@ public class ListQuestionMenu extends ConsoleMenu {
 		super("Maze Questions", previousMenu);
 
 		DatabaseQuestionUtility database  = new DatabaseQuestionUtility();
-		List<Question>          questions = Arrays.asList(database.loadQuestionSet());
+		List<Question>          questions = database.loadQuestionSet();
 
 		questions.forEach(question -> {
 			if (question != null) {

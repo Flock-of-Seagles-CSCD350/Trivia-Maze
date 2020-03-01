@@ -27,7 +27,6 @@ public class PlayField extends GridPane {
 			throw new IllegalArgumentException("Null canvas object passed into PlayField Constructor");
 
 		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
-		db.addInitialQuestionSets();
 		questionList = db.loadQuestionSet();
 
 		this.setWidth(canvas.getWidth());

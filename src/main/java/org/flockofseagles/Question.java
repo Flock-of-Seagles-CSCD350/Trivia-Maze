@@ -15,12 +15,4 @@ public class Question {
 		this.possibleAnswers = answers;
 		this.question        = question;
 	}
-
-    public String[] getPossibleAnswers() {
-        return this.possibleAnswers;
-    }
-
-    public String getQuestion() {
-        return this.question;
-    }
 }
