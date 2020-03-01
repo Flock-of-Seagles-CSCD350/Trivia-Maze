@@ -3,28 +3,32 @@ package org.flockofseagles;
 import org.junit.jupiter.api.*;
 
 import java.sql.*;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
-
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DatabaseQuestionUtilityTests {
 
 	private static Connection connection = null;
+	DatabaseQuestionUtility db;
+
+	@BeforeAll
+	public void init() {
+		db = new DatabaseQuestionUtility();
+	}
 
     @BeforeEach
     public void setup() {
         getConnection();
-        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
-        db.createTables();
-        db.addInitialQuestionSets();
     }
 
 	@AfterEach
 	public void teardown() {
 		try {
-			DatabaseQuestionUtilityTests.connection.close();
-		} catch (SQLException e) {
+			connection.close();
+		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -55,7 +59,6 @@ public class DatabaseQuestionUtilityTests {
 	@Test
 	@DisplayName("getQuestionId throws NoSuchElementException on no element")
 	public void databaseQuestionUtility_getQuestionId_notExists_throwsException() {
-		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 		assertThrows(NoSuchElementException.class, () -> db.getQuestionId("some question that doesn't exist"));
 	}
 
@@ -89,7 +92,6 @@ public class DatabaseQuestionUtilityTests {
 	@Test
 	@DisplayName("addQuestion correctly adds a new question")
 	public void databaseQuestionUtility_addQuestion_addsQuestion() {
-		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
 		var randomAnswerArray = new String[4];
 
@@ -144,7 +146,6 @@ public class DatabaseQuestionUtilityTests {
 	@Test
 	@DisplayName("removeQuestion removes all answers and question")
 	public void databaseQuestionUtility_removeQuestion_removesQuestion() {
-		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
 		var randomAnswerArray = new String[4];
 
@@ -177,7 +178,6 @@ public class DatabaseQuestionUtilityTests {
 	@Test
 	@DisplayName("editQuestion edits question text")
 	public void databaseQuestionUtility_editQuestion_editsQuestionText() {
-		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
 		var randomAnswerArray = new String[4];
 
@@ -206,7 +206,6 @@ public class DatabaseQuestionUtilityTests {
 	@Test
 	@DisplayName("addQuestion adds all passed answers")
 	public void databaseQuestionUtility_addQuestion_addsAnswers() {
-		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
 		var rand = new Random();
 
@@ -238,8 +237,6 @@ public class DatabaseQuestionUtilityTests {
 	@Test
 	@DisplayName("addAnswer correctly adds new answer for question")
 	public void databaseQuestionUtility_addAnswer_addsAnswerToQuestion() {
-		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
-
 		var randomAnswerArray = new String[3];
 
 		var rand = new Random();
@@ -273,7 +270,6 @@ public class DatabaseQuestionUtilityTests {
 	@Test
 	@DisplayName("removeAnswer removes specified answer")
 	public void databaseQuestionUtility_removeAnswer_removesAnswerFromQuestion() {
-		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
 		var randomAnswerArray = new String[4];
 
@@ -306,7 +302,6 @@ public class DatabaseQuestionUtilityTests {
 	@Test
 	@DisplayName("editAnswer edits answer text")
 	public void databaseQuestionUtility_editAnswer_editsAnswerText() {
-		DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
 		var randomAnswerArray = new String[4];
 
@@ -339,23 +334,16 @@ public class DatabaseQuestionUtilityTests {
 	@Test
 	@DisplayName("loadQuestionSet properly loads all questions")
 	public void databaseQuestionUtility_loadQuestionSet_loadsQuestionsIntoArray() {
-        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
 
-        var questionSet = db.loadQuestionSet();
-        assertNotEquals(0, questionSet.size());
+        List<Question> questionSet = db.loadQuestionSet();
 
-        for (Question question : questionSet) {
-            assert question != null;
-            for (int i = 0; i < questionSet.size(); i++) {
-                assertFalse(questionSet.get(i) == null && questionSet.get(i).getQuestion() == null && questionSet.get(i).getQuestion().isEmpty());
+        questionSet.forEach(question -> {
+			assertFalse(question == null && question.getQuestion() == null && question.getQuestion().isEmpty());
 
-                var answersArr = questionSet.get(i).getPossibleAnswers();
+			for(String a : question.getPossibleAnswers())
+				assertNotNull(a);
 
-                for (String s : answersArr) {
-                    assert s != null;
-                }
-            }
-        }
+		});
     }
 
         private void getConnection() {

@@ -14,22 +14,31 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
     public DatabaseQuestionUtility() {
         createTables();
-        addInitialQuestionSets();
+
+        if(dbIsEmpty())
+        	addInitialQuestionSets();
     }
 
     @Override
     public List<Question> loadQuestionSet() {
-        Connection connection = getConnection();
+    	connection = getConnection();
         var questionSet = new ArrayList<Question>();
 
 		try {
 
             String sqlStatement = "SELECT *" +
-                                    "FROM question LIMIT 100";
+                                    "FROM question";
 
-			ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+			ResultSet rs = connection.prepareStatement("SELECT count(*) FROM question").executeQuery();
 
-            for(int i = 0; rs.next(); i++) {
+			int rows = rs.getInt(1);
+
+			rs = connection.prepareStatement(sqlStatement).executeQuery();
+
+			System.out.println("Num rows: " + rows);
+
+
+            for(int i = 0; rs.next() && i < rows; i++) {
                 String questionId = rs.getString(1);
                 var answerArr = new String[4];
 
@@ -43,9 +52,9 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 					answerArr[j] = answer;
                 }
 
-                String questionString = rs.getString(2);
+				String questionString = rs.getString(2);
 
-                questionSet.add( new Question(answerArr, 0, questionString) );
+				questionSet.add( new Question(answerArr, 0, questionString) );
             }
 
 		} catch (SQLException e) {
@@ -59,12 +68,13 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
 	@Override
 	public int getQuestionId(String question) throws NoSuchElementException {
-		Connection connection = getConnection();
+    	connection = getConnection();
 
 		try {
 			String sqlStatement = String.format("SELECT question_id from question WHERE question_string = '%s'", question);
 
 			ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+
 
 			return rs.getInt(1);
 
@@ -76,11 +86,16 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
 	@Override
 	public void addQuestion(final String question, String[] answers) {
-		Connection connection = getConnection();
+    	connection = getConnection();
 
 		try {
+			String sqlStatement = String.format("SELECT COUNT(*) FROM question WHERE question_string = '%s'",
+					question);
 
-			String sqlStatement = String.format("INSERT INTO question(question_string, question_category) values('%s', '%s')",
+			if(connection.prepareStatement(sqlStatement).executeQuery().getInt(1) > 0)
+				throw new IllegalArgumentException("Duplicate question DatabaseQuestionsUtility addQuestion");
+
+			sqlStatement = String.format("INSERT INTO question(question_string, question_category) values('%s', '%s')",
 			                                    question,
 			                                    "multiple choice");
 
@@ -95,6 +110,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 			for (String answer : answers) {
 				String sqlStatement = String.format("INSERT INTO answer(answer_string, question_id) values('%s', '%s')", answer,
 				                                    getQuestionId(question));
+				connection = getConnection();
 				connection.prepareStatement(sqlStatement).execute();
 			}
 
@@ -107,7 +123,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
 	@Override
 	public void removeQuestion(String question) {
-		Connection connection = getConnection();
+    	connection = getConnection();
 
 		try {
 			String sqlStatement = String.format("DELETE FROM answer WHERE question_id = '%s'", getQuestionId(question));
@@ -130,7 +146,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
 	@Override
 	public void editQuestion(String oldQuestion, String newQuestion) {
-		Connection connection = getConnection();
+    	connection = getConnection();
 
 		try {
 			String sqlStatement = String.format("UPDATE question SET question_string = '%s' WHERE question_string = '%s'",
@@ -150,7 +166,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
 	@Override
 	public void addAnswer(String question, String answer) {
-		Connection connection = getConnection();
+    	connection = getConnection();
 
 		try {
 			String sqlStatement = String.format("INSERT INTO answer(answer_string, question_id) values('%s', '%s')", answer,
@@ -165,7 +181,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
 	@Override
 	public void editAnswer(String question, String oldAnswer, String newAnswer) {
-		Connection connection = getConnection();
+    	connection = getConnection();
 
 		try {
 			String sqlStatement = String.format("UPDATE answer SET answer_string = '%s' WHERE question_id = '%s' AND answer_string = '%s'",
@@ -180,7 +196,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
 	@Override
 	public void removeAnswer(String question, String answer) {
-		Connection connection = getConnection();
+    	connection = getConnection();
 
 		try {
 			String sqlStatement = String.format("DELETE FROM answer WHERE question_id = '%s' AND answer_string = '%s'",
@@ -288,6 +304,21 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 		}
 
 		closeConnection();
+	}
+
+	private boolean dbIsEmpty() {
+    	connection = getConnection();
+		try {
+			boolean isClosed = connection.prepareStatement("select count(*) from question").executeQuery().getInt(1) <= 0;
+			closeConnection();
+
+			return isClosed;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		closeConnection();
+		return false;
 	}
 
 	private Connection getConnection() {
