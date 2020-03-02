@@ -165,6 +165,8 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
                 }
             }
         }
+
+        System.out.println("Maze is solvable: " + field.mazeIsSolvable(field.player.xVal, field.player.yVal, 8, 8));
     }
 
     public void openPopUp() throws IOException {

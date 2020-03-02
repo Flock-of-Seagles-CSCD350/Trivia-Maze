@@ -13,6 +13,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.layout.GridPane;
 import org.flockofseagles.DatabaseQuestionUtility;
 import org.flockofseagles.Question;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.sql.*;
 import java.util.Random;
@@ -65,23 +68,40 @@ public class PlayFieldTests {
 
     @Test
     public void playField_mazeIsSolvable_returnsTrue_withStartCoordinates_blockedWalls() {
-        p.getWall(0,1).setLocked(true);
-        p.getWall(0,3).setLocked(true);
-        p.getWall(1,5).setLocked(true);
-        p.getWall(1,7).setLocked(true);
-        p.getWall(3,3).setLocked(true);
+        p.getWall(0, 1).setLocked(true);
+        p.getWall(0, 3).setLocked(true);
+        p.getWall(1, 5).setLocked(true);
+        p.getWall(1, 7).setLocked(true);
+        p.getWall(3, 3).setLocked(true);
 
 
         assertTrue(p.mazeIsSolvable(0, 0, 8, 8));
     }
 
+    @ParameterizedTest
+    @CsvSource({
+            "0, 0",
+            "4, 6",
+            "6, 6"
+    })
+    public void playField_mazeIsSolvable_returnsTrue_withRandomCoordinates_blockedWalls(int x, int y) {
+        p.getWall(0, 1).setLocked(true);
+        p.getWall(0, 3).setLocked(true);
+        p.getWall(1, 5).setLocked(true);
+        p.getWall(1, 7).setLocked(true);
+        p.getWall(3, 3).setLocked(true);
+
+
+        assertTrue(p.mazeIsSolvable(x, y, 8, 8));
+    }
+
     @Test
     public void playField_mazeIsSolvable_returnsFalse_withStartCoordinates_blockedStartingWallPath() {
-        p.getWall(0,1).setLocked(true);
-        p.getWall(0,3).setLocked(true);
-        p.getWall(1,0).setLocked(true);
-        p.getWall(1,7).setLocked(true);
-        p.getWall(3,3).setLocked(true);
+        p.getWall(0, 1).setLocked(true);
+        p.getWall(0, 3).setLocked(true);
+        p.getWall(1, 0).setLocked(true);
+        p.getWall(1, 7).setLocked(true);
+        p.getWall(3, 3).setLocked(true);
 
 
         assertFalse(p.mazeIsSolvable(0, 0, 8, 8));
@@ -89,15 +109,15 @@ public class PlayFieldTests {
 
     @Test
     public void playField_mazeIsSolvable_returnsFalse_withStartCoordinates_blockedMiddleWallPath() {
-        p.getWall(0,5).setLocked(true);
-        p.getWall(1,5).setLocked(true);
-        p.getWall(2,5).setLocked(true);
-        p.getWall(3,5).setLocked(true);
-        p.getWall(4,5).setLocked(true);
-        p.getWall(5,5).setLocked(true);
-        p.getWall(6,5).setLocked(true);
-        p.getWall(7,5).setLocked(true);
-        p.getWall(8,5).setLocked(true);
+        p.getWall(0, 5).setLocked(true);
+        p.getWall(1, 5).setLocked(true);
+        p.getWall(2, 5).setLocked(true);
+        p.getWall(3, 5).setLocked(true);
+        p.getWall(4, 5).setLocked(true);
+        p.getWall(5, 5).setLocked(true);
+        p.getWall(6, 5).setLocked(true);
+        p.getWall(7, 5).setLocked(true);
+        p.getWall(8, 5).setLocked(true);
 
 
         assertFalse(p.mazeIsSolvable(0, 0, 8, 8));
