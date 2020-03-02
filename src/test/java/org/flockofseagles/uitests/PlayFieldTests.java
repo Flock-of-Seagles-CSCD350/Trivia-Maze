@@ -2,6 +2,7 @@ package org.flockofseagles.uitests;
 
 import org.flockofseagles.DatabaseQuestionUtilityTests;
 import org.flockofseagles.ui.PlayField;
+import org.flockofseagles.ui.Wall;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +26,7 @@ public class PlayFieldTests {
     public void setup() {
         testCanvas = new Canvas();
         p = new PlayField(testCanvas);
+        p.initializePlayField();
     }
 
     @Test
@@ -44,5 +46,60 @@ public class PlayFieldTests {
         assertThrows(IllegalArgumentException.class, () -> {
             PlayField testField = new PlayField(null);
         });
+    }
+
+    @Test
+    public void playField_mazeIsSolvable_returnsTrue_withTargetCoordinates() {
+        assertTrue(p.mazeIsSolvable(8, 8, 8, 8));
+    }
+
+    @Test
+    public void playField_mazeIsSolvable_returnsFalse_onOutOfBoundsCoordinates() {
+        assertFalse(p.mazeIsSolvable(20, 20, 8, 8));
+    }
+
+    @Test
+    public void playField_mazeIsSolvable_returnsTrue_withStartCoordinates() {
+        assertTrue(p.mazeIsSolvable(0, 0, 8, 8));
+    }
+
+    @Test
+    public void playField_mazeIsSolvable_returnsTrue_withStartCoordinates_blockedWalls() {
+        p.getWall(0,1).setLocked(true);
+        p.getWall(0,3).setLocked(true);
+        p.getWall(1,5).setLocked(true);
+        p.getWall(1,7).setLocked(true);
+        p.getWall(3,3).setLocked(true);
+
+
+        assertTrue(p.mazeIsSolvable(0, 0, 8, 8));
+    }
+
+    @Test
+    public void playField_mazeIsSolvable_returnsFalse_withStartCoordinates_blockedStartingWallPath() {
+        p.getWall(0,1).setLocked(true);
+        p.getWall(0,3).setLocked(true);
+        p.getWall(1,0).setLocked(true);
+        p.getWall(1,7).setLocked(true);
+        p.getWall(3,3).setLocked(true);
+
+
+        assertFalse(p.mazeIsSolvable(0, 0, 8, 8));
+    }
+
+    @Test
+    public void playField_mazeIsSolvable_returnsFalse_withStartCoordinates_blockedMiddleWallPath() {
+        p.getWall(0,5).setLocked(true);
+        p.getWall(1,5).setLocked(true);
+        p.getWall(2,5).setLocked(true);
+        p.getWall(3,5).setLocked(true);
+        p.getWall(4,5).setLocked(true);
+        p.getWall(5,5).setLocked(true);
+        p.getWall(6,5).setLocked(true);
+        p.getWall(7,5).setLocked(true);
+        p.getWall(8,5).setLocked(true);
+
+
+        assertFalse(p.mazeIsSolvable(0, 0, 8, 8));
     }
 }
