@@ -5,6 +5,7 @@ import org.junit.jupiter.api.*;
 import java.sql.*;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,23 +23,11 @@ public class DatabaseQuestionUtilityTests {
 
     @BeforeEach
     public void setup() {
-        db.addInitialQuestionSets();
         getConnection();
     }
 
     @AfterEach
     public void teardown() {
-        try {
-            String sqlStatement = "DELETE FROM answer";
-
-            connection.prepareStatement(sqlStatement).execute();
-
-            sqlStatement = "DELETE FROM question";
-            connection.prepareStatement(sqlStatement).execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
         try {
             connection.close();
         } catch (SQLException e) {
@@ -92,9 +81,10 @@ public class DatabaseQuestionUtilityTests {
 
             rsmd = rs.getMetaData();
 
-            assertEquals("answer_id", rsmd.getColumnName(1));
-            assertEquals("answer_string", rsmd.getColumnName(2));
+            assertEquals("answer_string", rsmd.getColumnName(1));
 
+
+            rs.close();
 
         } catch (SQLException e) {
             System.out.println("error in databaseQuestionUtility_createTables_createsTables");
@@ -112,6 +102,7 @@ public class DatabaseQuestionUtilityTests {
 
         for (int i = 0; i < randomAnswerArray.length; i++) {
             randomAnswerArray[i] = Integer.toString(rand.nextInt());
+            System.out.println(randomAnswerArray[i]);
         }
 
         String randomNumString = Integer.toString(new Random().nextInt());
@@ -128,7 +119,6 @@ public class DatabaseQuestionUtilityTests {
             while (rs.next()) {
                 initialRowCount = rs.getInt(1);
             }
-
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -149,6 +139,8 @@ public class DatabaseQuestionUtilityTests {
 
 
             assertNotEquals(initialRowCount, count);
+
+            rs.close();
 
         } catch (SQLException e) {
             System.out.println("error in databaseQuestionUtility_addQuestion_addsQuestion");
@@ -239,7 +231,7 @@ public class DatabaseQuestionUtilityTests {
 
             int count = rs.getInt(1);
 
-            assertEquals(initialRowCount + randomAnswerArray.length, count);
+            assertEquals(randomAnswerArray.length, count);
 
         } catch (SQLException e) {
             System.out.println("error in databaseQuestionUtility_addQuestion_addsQuestion");
@@ -292,24 +284,26 @@ public class DatabaseQuestionUtilityTests {
             randomAnswerArray[i] = Integer.toString(rand.nextInt());
         }
 
-        String randomNumString = Integer.toString(new Random().nextInt());
+        String testQuestionText = "Test question text";
 
-        db.addQuestion(randomNumString, randomAnswerArray);
-        int id = db.getQuestionId(randomNumString);
+        db.addQuestion(testQuestionText, randomAnswerArray);
+        int id = db.getQuestionId(testQuestionText);
 
         // remove last item in answers
-        db.removeAnswer(randomNumString, randomAnswerArray[3]);
-
+        db.removeAnswer(testQuestionText, randomAnswerArray[3]);
         try {
             String sqlStatement = "SELECT COUNT(*) FROM answer WHERE question_id = " + id;
             ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
             int count = rs.getInt(1);
-
+            connection.close();
             assertEquals(3, count);
+
         } catch (SQLException e) {
             System.out.println("error in databaseQuestionUtility_removeQuestion_removesQuestion");
             e.printStackTrace();
         }
+
+        db.removeQuestion(testQuestionText);
     }
 
     @Test
@@ -362,8 +356,11 @@ public class DatabaseQuestionUtilityTests {
     }
 
     private void getConnection() {
+        final Properties connectionProperties = new Properties();
+        connectionProperties.setProperty("PRAGMA foreign_keys", "ON");
+        String connectionString = String.format("jdbc:sqlite:%s", "questions.sqlite");
         try {
-            connection = DriverManager.getConnection("jdbc:sqlite:questions.sqlite");
+            connection = DriverManager.getConnection(connectionString, connectionProperties);
 
         } catch (SQLException e) {
             e.printStackTrace();

@@ -1,5 +1,7 @@
 package org.flockofseagles;
 
+import org.sqlite.SQLiteConfig;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -7,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Properties;
 
 public class DatabaseQuestionUtility implements QuestionUtility {
 
@@ -14,9 +17,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
     public DatabaseQuestionUtility() {
         createTables();
-
-        if (dbIsEmpty())
-            addInitialQuestionSets();
+        addInitialQuestionSets();
     }
 
     @Override
@@ -127,15 +128,8 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         connection = getConnection();
 
         try {
-            String sqlStatement = String.format("DELETE FROM answer WHERE question_id = '%s'", getQuestionId(question));
-            connection.prepareStatement(sqlStatement).execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        try {
             String sqlStatement = String.format("DELETE FROM question WHERE question_string = '%s'", question);
-            connection.prepareStatement(sqlStatement).execute();
+            connection.prepareStatement(sqlStatement).executeUpdate();
 
             System.out.println("question removed");
         } catch (SQLException e) {
@@ -218,16 +212,14 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
         try {
             connection.prepareStatement("CREATE TABLE IF NOT EXISTS question (" +
-                                        "question_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                                        "question_id INTEGER PRIMARY KEY AUTOINCREMENT," +
                                         "question_string TEXT NOT NULL," +
                                         "question_category TEXT NOT NULL)").execute();
 
             connection.prepareStatement("CREATE TABLE IF NOT EXISTS answer (" +
-                                        "answer_id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
                                         "answer_string TEXT NOT NULL," +
-                                        "question_id INTEGER NOT NULL," +
-                                        "FOREIGN KEY(question_id) REFERENCES question(question_id)" +
-                                        "ON DELETE CASCADE)").execute();
+                                        "question_id INTEGER REFERENCES question(question_id) ON DELETE CASCADE" +
+                                        ")").execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -324,9 +316,16 @@ public class DatabaseQuestionUtility implements QuestionUtility {
     }
 
     private Connection getConnection() {
+
+        Properties connectionProperties;
+        String connectionString = String.format("jdbc:sqlite:%s", "questions.sqlite");
+        SQLiteConfig config = new SQLiteConfig();
+        config.enforceForeignKeys(true);
+        connectionProperties = config.toProperties();
+
         try {
             if (connection == null || connection.isClosed()) {
-                connection = DriverManager.getConnection("jdbc:sqlite:questions.sqlite");
+                connection = DriverManager.getConnection(connectionString, connectionProperties);
             }
 
         } catch (SQLException e) {
