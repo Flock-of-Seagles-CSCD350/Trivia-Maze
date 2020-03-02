@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
-
 <AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" style="-fx-background-color: #EDEDED;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.flockofseagles.ui.OptionsLayoutController">
     <children>
         <StackPane fx:id="stPane" layoutX="62.0" layoutY="55.0" prefHeight="390.0" prefWidth="471.0" style="-fx-border-color: #3CB371; -fx-border-width: 5;">
@@ -22,7 +19,8 @@
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Close" />
+                        <MenuItem mnemonicParsing="false" onAction="#closeGame" text="Close" />
+                        <MenuItem onAction="#saveGame" text="Save Game" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
