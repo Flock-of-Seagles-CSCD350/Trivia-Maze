@@ -3,12 +3,10 @@ package org.flockofseagles.console.admin.question;
 import org.flockofseagles.DatabaseQuestionUtility;
 import org.flockofseagles.Question;
 import org.flockofseagles.console.ConsoleMenu;
+import org.flockofseagles.console.InputWrapper;
 import org.flockofseagles.console.MenuItem;
 
-import java.util.Arrays;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 
 public class ListQuestionMenu extends ConsoleMenu {
 
@@ -24,7 +22,11 @@ public class ListQuestionMenu extends ConsoleMenu {
 			}
 		});
 
-		addMenuItem(new MenuItem("Add New Item", () -> System.out.println("Not Yet Implemented")));
+		addMenuItem(new MenuItem("Add New Item", () -> {
+			var question = new Question(new String[]{}, 1, InputWrapper.readString("Enter the question: "));
+			new DatabaseQuestionUtility().addQuestion(question.getQuestion(), question.getPossibleAnswers());
+			new AddQuestionMenu(question, this).open();
+		}));
 	}
 
 	@Override

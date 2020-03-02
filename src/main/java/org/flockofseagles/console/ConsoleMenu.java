@@ -30,9 +30,16 @@ public abstract class ConsoleMenu {
 			menuItems.sort(MenuItem::compareTo);
 		}
 
+		var stream = menuItems.stream().filter(menuItem -> menuItem.getTitle().equals("Add New Item")).findFirst();
+		if (stream.isPresent()) {
+			var item = stream.get();
+			menuItems.remove(item);
+			menuItems.add(item);
+		}
+
 		if (previousMenu != null) {
 			menuItems.removeIf(menuItem -> menuItem.getTitle().equals("Go Back"));
-			menuItems.add(new MenuItem("Go Back", previousMenu::open));
+			menuItems.add(new MenuItem("Go Back", previousMenu.reload()::open));
 		}
 		System.out.println();
 		System.out.println("\u2B16 " + title + " \u2B17");
