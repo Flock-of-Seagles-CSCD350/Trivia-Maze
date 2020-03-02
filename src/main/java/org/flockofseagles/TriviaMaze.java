@@ -1,14 +1,22 @@
 package org.flockofseagles;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.flockofseagles.console.admin.AdminMenu;
 import org.flockofseagles.ui.GUI;
-import org.flockofseagles.ui.OptionsLayoutController;
+import org.flockofseagles.util.DataStore;
+import org.flockofseagles.util.SaveGame;
 
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.InvalidClassException;
+import java.io.ObjectInputStream;
 
 public class TriviaMaze {
+
+	@Getter
+	@Setter
+	private SaveGame saveGame;
 
 	public static void main(String[] args) {
 		if (args.length > 0 && args[0].equals("--admin")) {
@@ -18,18 +26,29 @@ public class TriviaMaze {
 		}
 	}
 
-	public static void saveGame() {
+	public static void saveGame(DataStore data) {
+		new SaveGame(data).save();
+	}
+
+	public static DataStore getLastSave() {
+		DataStore load = null;
 		try {
-			FileOutputStream   outputStream       = new FileOutputStream("savegame.dat");
-			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
-			objectOutputStream.writeObject(OptionsLayoutController.field);
-			objectOutputStream.close();
-			outputStream.close();
+			FileInputStream   inputStream       = new FileInputStream("savegame.dat");
+			ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+			try {
+				load = (DataStore) objectInputStream.readObject();
+			} catch (InvalidClassException e) {
+				return null;
+			}
+			objectInputStream.close();
+			inputStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-			// TODO: Error in GUI
+		} catch (ClassNotFoundException e) {
+			System.err.println("Dungeon class not found");
+			e.printStackTrace();
 		}
-		// TODO: Successful save message in GUI
+		return load;
 	}
 
 }

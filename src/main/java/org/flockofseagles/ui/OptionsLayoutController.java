@@ -53,17 +53,17 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		Wall w;
 
 		if (new KeyCodeCombination(KeyCode.UP).match(keyEvent)) {
-			if (field.player.xVal == 0) {
+			if (field.getDataStore().getPlayer().xVal == 0) {
 				Alert alert = new Alert(Alert.AlertType.ERROR);
 				alert.setTitle("Out of bounds!");
 				alert.setHeaderText("Cannot move up!");
 				alert.show();
-            } else {
-                try {
-                    w = field.getWall(field.player.xVal - 1, field.player.yVal);
+			} else {
+				try {
+					w = field.getWall(field.getDataStore().getPlayer().xVal - 1, field.getDataStore().getPlayer().yVal);
 
-                    if (w.isPassable) {
-                        field.correctAnswer = true;
+					if (w.isPassable) {
+						field.correctAnswer = true;
                         field.updatePlayer(1);
                     } else if (w.isLocked) {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -81,17 +81,17 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
                 }
             }
         } else if (keyEvent.getCode() == KeyCode.DOWN) {
-            if (field.player.xVal == (field.getLength() - 1)) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Out of bounds!");
-                alert.setHeaderText("Cannot move down!");
-                alert.show();
-            } else {
-                try {
-                    w = field.getWall(field.player.xVal + 1, field.player.yVal);
+			if (field.getDataStore().getPlayer().xVal == (field.getLength() - 1)) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Out of bounds!");
+				alert.setHeaderText("Cannot move down!");
+				alert.show();
+			} else {
+				try {
+					w = field.getWall(field.getDataStore().getPlayer().xVal + 1, field.getDataStore().getPlayer().yVal);
 
-                    if (w.isPassable) {
-                        field.correctAnswer = true;
+					if (w.isPassable) {
+						field.correctAnswer = true;
                         field.updatePlayer(2);
                     } else if (w.isLocked) {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -111,17 +111,17 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
             }
         } else if (keyEvent.getCode() == KeyCode.LEFT) {
 
-            if (field.player.yVal == 0) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Out of bounds!");
-                alert.setHeaderText("Cannot move left");
-                alert.show();
-            } else {
-                try {
-                    w = field.getWall(field.player.xVal, field.player.yVal - 1);
+			if (field.getDataStore().getPlayer().yVal == 0) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Out of bounds!");
+				alert.setHeaderText("Cannot move left");
+				alert.show();
+			} else {
+				try {
+					w = field.getWall(field.getDataStore().getPlayer().xVal, field.getDataStore().getPlayer().yVal - 1);
 
-                    if (w.isPassable) {
-                        field.correctAnswer = true;
+					if (w.isPassable) {
+						field.correctAnswer = true;
                         field.updatePlayer(3);
                     } else if (w.isLocked) {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -139,17 +139,17 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
                 }
             }
         } else if (keyEvent.getCode() == KeyCode.RIGHT) {
-            if (field.player.yVal == (field.getLength() - 1)) {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Out of bounds!");
-                alert.setHeaderText("Cannot move right");
-                alert.show();
-            } else {
-                try {
-                    w = field.getWall(field.player.xVal, field.player.yVal + 1);
+			if (field.getDataStore().getPlayer().yVal == (field.getLength() - 1)) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Out of bounds!");
+				alert.setHeaderText("Cannot move right");
+				alert.show();
+			} else {
+				try {
+					w = field.getWall(field.getDataStore().getPlayer().xVal, field.getDataStore().getPlayer().yVal + 1);
 
-                    if (w.isPassable) {
-                        field.correctAnswer = true;
+					if (w.isPassable) {
+						field.correctAnswer = true;
                         field.updatePlayer(4);
                     } else if (w.isLocked) {
                         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -168,7 +168,10 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
             }
         }
 
-        System.out.println("Maze is solvable: " + field.mazeIsSolvable(field.player.xVal, field.player.yVal, 8, 8));
+		System.out.println("Maze is solvable: " + field.mazeIsSolvable(field.getDataStore().getPlayer().xVal,
+		                                                               field.getDataStore().getPlayer().yVal,
+		                                                               8,
+		                                                               8));
     }
 
     public void openPopUp() throws IOException {
@@ -190,7 +193,9 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 	}
 
 	public void saveGame(ActionEvent actionEvent) {
-		TriviaMaze.saveGame();
+		System.out.println("Saving game...");
+		TriviaMaze.saveGame(field.getDataStore());
+		System.out.println("Game saved!");
 	}
 
 }
