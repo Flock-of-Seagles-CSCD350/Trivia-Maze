@@ -22,17 +22,17 @@
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Close" />
+                        <MenuItem fx:id="file_save" mnemonicParsing="false" text="Save" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Edit">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
+                  <MenuItem fx:id="menuItem_difficulty" mnemonicParsing="false" text="Change Difficulty" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Help">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
+                        <MenuItem fx:id="help_about" mnemonicParsing="false" text="About" />
                     </items>
                 </Menu>
             </menus>

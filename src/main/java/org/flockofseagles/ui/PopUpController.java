@@ -1,5 +1,4 @@
 package org.flockofseagles.ui;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -11,10 +10,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import org.flockofseagles.Question;
-
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
 public class PopUpController extends Dialog<Void> implements Initializable
@@ -53,6 +54,7 @@ public class PopUpController extends Dialog<Void> implements Initializable
 	public ToggleGroup radioGroup;
 	public boolean isAnswered = false;
 
+
 	public void setUp()
 	{
 		btn_OK.setOnAction(ActionEvent -> closeWindow(ActionEvent));
@@ -90,6 +92,7 @@ public class PopUpController extends Dialog<Void> implements Initializable
 					if (selected.getText().equals(answerSet[0])) //answer is correct
 					{
 						img_status.setImage(new Image("/images/correct.png"));
+						playClip(true);
 						rb_answer2.setDisable(true);
 						rb_answer3.setDisable(true);
 						rb_answer4.setDisable(true);
@@ -98,6 +101,7 @@ public class PopUpController extends Dialog<Void> implements Initializable
 					} else										//answer was incorrect
 					{
 						img_status.setImage(new Image("/images/wrong.png"));
+						playClip(false);
 						rb_answer1.setDisable(true);
 						rb_answer2.setDisable(true);
 						rb_answer3.setDisable(true);
@@ -119,6 +123,26 @@ public class PopUpController extends Dialog<Void> implements Initializable
 			stage.close();
 		}
 
+	}
+
+	public void playClip(Boolean b)
+	{
+		Media pick;
+		MediaPlayer player;
+
+
+		if(b)
+		{
+			pick = new Media(Paths.get("src/main/resources/sounds/cheers.wav").toUri().toString());
+			player = new MediaPlayer(pick);
+			player.play();
+		}
+		else
+		{
+			pick = new Media(Paths.get("src/main/resources/sounds/boos.wav").toUri().toString());
+			player = new MediaPlayer(pick);
+			player.play();
+		}
 	}
 
 
