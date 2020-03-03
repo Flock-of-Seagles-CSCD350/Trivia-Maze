@@ -48,6 +48,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 	private ToggleGroup difficultyGroup;
 	private static int difficulty = 1;
 	public boolean adminPrivileges = false;
+	private boolean isPlaying = true;
 
 
 	@Override
@@ -59,6 +60,19 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		stPane.setBackground(new Background(new BackgroundImage(img, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
 				BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
 		stPane.getChildren().add(field);
+
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("Welcome");
+		alert.setHeaderText("Welcome to Football Trivia Maze!\n" +
+				"> Use the arrow keys to move around.\n" +
+				"> Each time you move your player, a question will be asked\n" +
+				"> If you answer correctly, you can move past it.\n" +
+				"> If you answer incorrectly, the door will lock.\n" +
+				"> Make you way to the end to win. Good luck!\n");
+
+		Button btnGo = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+		btnGo.setText("Let's Go!");
+		alert.showAndWait();
 
 	}
 
@@ -77,214 +91,217 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 
 	public void onKeyPressed(KeyEvent keyEvent)
 	{
-		Wall w;
-
-		if(new KeyCodeCombination(KeyCode.UP).match(keyEvent))
+		if(isPlaying)
 		{
-			if(field.player.xVal == 0)
-			{
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Out of bounds!");
-				alert.setHeaderText("Cannot move up!");
-				alert.show();
-			}
-			else if(adminPrivileges)
-			{
-				field.correctAnswer = true;
-				field.updatePlayer(1);
-			}
-			else
-			{
-				try
-				{
-					w = field.getWall(field.player.xVal - 1, field.player.yVal);
+			Wall w;
 
-					if (w.isPassable)
+			if (new KeyCodeCombination(KeyCode.UP).match(keyEvent))
+			{
+				if (field.player.xVal == 0)
+				{
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Out of bounds!");
+					alert.setHeaderText("Cannot move up!");
+					alert.show();
+				} else if (adminPrivileges)
+				{
+					field.correctAnswer = true;
+					field.updatePlayer(1);
+				} else
+				{
+					try
 					{
-						field.correctAnswer = true;
-						field.updatePlayer(1);
+						w = field.getWall(field.player.xVal - 1, field.player.yVal);
+
+						if (w.isPassable)
+						{
+							field.correctAnswer = true;
+							field.updatePlayer(1);
+						} else if (w.isLocked)
+						{
+							Alert alert = new Alert(Alert.AlertType.ERROR);
+							alert.setTitle("False Start!");
+							alert.setHeaderText("That door is locked! Try another one.");
+							alert.show();
+						} else
+						{
+							openPopUp();
+							field.updatePlayer(1);
+						}
+						field.correctAnswer = false;
+
+					} catch (IOException e)
+					{
+						e.printStackTrace();
 					}
-					else if (w.isLocked)
+				}
+			} else if (keyEvent.getCode() == KeyCode.DOWN)
+			{
+				if (field.player.xVal == (field.getLength() - 1))
+				{
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Out of bounds!");
+					alert.setHeaderText("Cannot move down!");
+					alert.show();
+				} else if (adminPrivileges)
+				{
+					field.correctAnswer = true;
+					field.updatePlayer(2);
+				} else
+				{
+					try
 					{
-						Alert alert = new Alert(Alert.AlertType.ERROR);
-						alert.setTitle("False Start!");
-						alert.setHeaderText("That door is locked! Try another one.");
-						alert.show();
+						w = field.getWall(field.player.xVal + 1, field.player.yVal);
+
+						if (w.isPassable)
+						{
+							field.correctAnswer = true;
+							field.updatePlayer(2);
+						} else if (w.isLocked)
+						{
+							Alert alert = new Alert(Alert.AlertType.ERROR);
+							alert.setTitle("False Start!");
+							alert.setHeaderText("That door is locked! Try another one.");
+							alert.show();
+						} else
+						{
+							openPopUp();
+							field.updatePlayer(2);
+						}
+						field.correctAnswer = false;
+
+
+					} catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			} else if (keyEvent.getCode() == KeyCode.LEFT)
+			{
+
+				if (field.player.yVal == 0)
+				{
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Out of bounds!");
+					alert.setHeaderText("Cannot move left");
+					alert.show();
+				} else if (adminPrivileges)
+				{
+					field.correctAnswer = true;
+					field.updatePlayer(3);
+				} else
+				{
+					try
+					{
+						w = field.getWall(field.player.xVal, field.player.yVal - 1);
+
+						if (w.isPassable)
+						{
+							field.correctAnswer = true;
+							field.updatePlayer(3);
+						} else if (w.isLocked)
+						{
+							Alert alert = new Alert(Alert.AlertType.ERROR);
+							alert.setTitle("False Start!");
+							alert.setHeaderText("That door is locked! Try another one.");
+							alert.show();
+						} else
+						{
+							openPopUp();
+							field.updatePlayer(3);
+						}
+						field.correctAnswer = false;
+
+					} catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			} else if (keyEvent.getCode() == KeyCode.RIGHT)
+			{
+				if (field.player.yVal == (field.getLength() - 1))
+				{
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Out of bounds!");
+					alert.setHeaderText("Cannot move right");
+					alert.show();
+				} else if (adminPrivileges)
+				{
+					field.correctAnswer = true;
+					field.updatePlayer(4);
+				} else
+				{
+					try
+					{
+						w = field.getWall(field.player.xVal, field.player.yVal + 1);
+
+						if (w.isPassable)
+						{
+							field.correctAnswer = true;
+							field.updatePlayer(4);
+						} else if (w.isLocked)
+						{
+							Alert alert = new Alert(Alert.AlertType.ERROR);
+							alert.setTitle("False Start!");
+							alert.setHeaderText("That door is locked! Try another one.");
+							alert.show();
+						} else
+						{
+							openPopUp();
+							field.updatePlayer(4);
+						}
+						field.correctAnswer = false;
+
+					} catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			} else if (new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_ANY).match(keyEvent))
+			{
+				if (!adminPrivileges)
+				{
+					adminPrivileges = true;
+					Alert alert = new Alert(Alert.AlertType.INFORMATION);
+					alert.setHeaderText("Admin Privileges Enabled");
+					alert.show();
+				} else
+				{
+					adminPrivileges = false;
+					Alert alert = new Alert(Alert.AlertType.INFORMATION);
+					alert.setHeaderText("Admin Privileges Disabled");
+					alert.show();
+				}
+			}
+
+			if (field.isEnd(field.player.xVal, field.player.yVal))
+			{
+				Alert alert = new Alert(Alert.AlertType.INFORMATION);
+				alert.setTitle("Congratulations!");
+				alert.setHeaderText("Winner winner chicken dinner!\n" +
+						"Thank you for playing!");
+				Optional<ButtonType> result = alert.showAndWait();
+
+				if (result.get() == ButtonType.OK)
+				{
+					alert.close();
+
+					Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+					alert2.setTitle("New Game");
+					alert2.setHeaderText("Would you like to Play again?");
+					Button btnYES = (Button) alert2.getDialogPane().lookupButton(ButtonType.OK);
+					btnYES.setText("YES");
+					alert2.getButtonTypes().add(ButtonType.NO);
+					Optional<ButtonType> choice = alert2.showAndWait();
+
+					if (choice.get() == ButtonType.OK)
+					{
+						reInitialize();
 					} else
 					{
-						openPopUp();
-						field.updatePlayer(1);
-					}
-					field.correctAnswer = false;
 
-				} catch (IOException e)
-				{
-					e.printStackTrace();
+					}
 				}
-			}
-		}
-
-
-		else if(keyEvent.getCode() == KeyCode.DOWN)
-		{
-			if(field.player.xVal == (field.getLength() - 1))
-			{
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Out of bounds!");
-				alert.setHeaderText("Cannot move down!");
-				alert.show();
-			}
-			else if(adminPrivileges)
-			{
-				field.correctAnswer = true;
-				field.updatePlayer(2);
-			}
-			else
-			{
-				try
-				{
-					w = field.getWall(field.player.xVal + 1, field.player.yVal);
-
-					if (w.isPassable)
-					{
-						field.correctAnswer = true;
-						field.updatePlayer(2);
-					}
-					else if (w.isLocked)
-					{
-						Alert alert = new Alert(Alert.AlertType.ERROR);
-						alert.setTitle("False Start!");
-						alert.setHeaderText("That door is locked! Try another one.");
-						alert.show();
-					}
-					else
-					{
-						openPopUp();
-						field.updatePlayer(2);
-					}
-					field.correctAnswer = false;
-
-
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-
-
-		else if(keyEvent.getCode() == KeyCode.LEFT)
-		{
-
-			if(field.player.yVal == 0)
-			{
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Out of bounds!");
-				alert.setHeaderText("Cannot move left");
-				alert.show();
-			}
-			else if(adminPrivileges)
-			{
-				field.correctAnswer = true;
-				field.updatePlayer(3);
-			}
-			else
-			{
-				try
-				{
-					w = field.getWall(field.player.xVal, field.player.yVal - 1);
-
-					if (w.isPassable)
-					{
-						field.correctAnswer = true;
-						field.updatePlayer(3);
-					}
-					else if (w.isLocked)
-					{
-						Alert alert = new Alert(Alert.AlertType.ERROR);
-						alert.setTitle("False Start!");
-						alert.setHeaderText("That door is locked! Try another one.");
-						alert.show();
-					}
-					else
-					{
-						openPopUp();
-						field.updatePlayer(3);
-					}
-					field.correctAnswer = false;
-
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-
-
-		else if(keyEvent.getCode() == KeyCode.RIGHT)
-		{
-			if(field.player.yVal == (field.getLength() - 1))
-			{
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Out of bounds!");
-				alert.setHeaderText("Cannot move right");
-				alert.show();
-			}
-			else if(adminPrivileges)
-			{
-				field.correctAnswer = true;
-				field.updatePlayer(4);
-			}
-			else
-			{
-				try
-				{
-					w = field.getWall(field.player.xVal, field.player.yVal + 1);
-
-					if (w.isPassable)
-					{
-						field.correctAnswer = true;
-						field.updatePlayer(4);
-					}
-					else if (w.isLocked)
-					{
-						Alert alert = new Alert(Alert.AlertType.ERROR);
-						alert.setTitle("False Start!");
-						alert.setHeaderText("That door is locked! Try another one.");
-						alert.show();
-					}
-					else
-					{
-						openPopUp();
-						field.updatePlayer(4);
-					}
-					field.correctAnswer = false;
-
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
-		}
-
-		else if(new KeyCodeCombination(KeyCode.A, KeyCombination.CONTROL_ANY).match(keyEvent))
-		{
-			if(!adminPrivileges)
-			{
-				adminPrivileges = true;
-				Alert alert = new Alert(Alert.AlertType.INFORMATION);
-				alert.setHeaderText("Admin Privileges Enabled");
-				alert.show();
-			}
-			else
-			{
-				adminPrivileges = false;
-				Alert alert = new Alert(Alert.AlertType.INFORMATION);
-				alert.setHeaderText("Admin Privileges Disabled");
-				alert.show();
 			}
 		}
 	}

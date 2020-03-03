@@ -3,6 +3,8 @@ package org.flockofseagles.ui;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class PlayField extends GridPane {
 	protected Canvas[][] field;
@@ -23,7 +26,6 @@ public class PlayField extends GridPane {
 	ArrayList<Wall> walls = new ArrayList<>();
 	private List<Question> questionList;
 	protected boolean correctAnswer = false;
-	private Canvas endGoal;
 
 
 	public PlayField(Canvas canvas, int diff) {
@@ -124,7 +126,6 @@ public class PlayField extends GridPane {
 					//GraphicsContext gc = canvas.getGraphicsContext2D();
 					//canvas.setUserData("Goal");
 					//gc.drawImage(im.getImage(), 0, 0, canvas.getWidth(), canvas.getHeight());
-					endGoal = canvas;
 				}
 				else {
 					canvas = this.field[i][j];
@@ -136,6 +137,7 @@ public class PlayField extends GridPane {
 
 	public void updatePlayer(int i)
 	{
+
 		Canvas canvas = getCanvas(player.xVal, player.yVal);
 		Wall w;
 		Media pick;
@@ -148,6 +150,7 @@ public class PlayField extends GridPane {
 
 			if(correctAnswer)
 			{
+
 				w.isPassable = true;
 				clearCanvas(canvas);
 				canvas = this.field[player.xVal - 2][player.yVal];
@@ -240,6 +243,8 @@ public class PlayField extends GridPane {
 				w.drawVertLocked(canvas);
 			}
 		}
+
+
 	}
 
 	public void clearCanvas(Canvas canvas) {
@@ -283,6 +288,11 @@ public class PlayField extends GridPane {
 	public int getLength()
 	{
 		return this.field.length;
+	}
+
+	public boolean isEnd(int x , int y)
+	{
+		return x == this.getLength() - 1 && y == this.getLength() - 1;
 	}
 
 
