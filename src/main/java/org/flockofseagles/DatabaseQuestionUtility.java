@@ -2,10 +2,7 @@ package org.flockofseagles;
 
 import org.sqlite.SQLiteConfig;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -91,17 +88,23 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         connection = getConnection();
 
         try {
-            String sqlStatement = String.format("SELECT COUNT(*) FROM question WHERE question_string = '%s'",
+            String sqlStatement = String.format("SELECT COUNT(*) FROM question WHERE question_string = ?",
                     question);
 
-            if (connection.prepareStatement(sqlStatement).executeQuery().getInt(1) > 0)
+            PreparedStatement query = connection.prepareStatement(sqlStatement);
+
+            query.setString(1, question);
+
+            if (query.executeQuery().getInt(1) > 0)
                 return;
 
-            sqlStatement = String.format("INSERT INTO question(question_string, question_category) values('%s', '%s')",
-                    question,
-                    "multiple choice");
+            sqlStatement = String.format("INSERT INTO question(question_string, question_category) values(?, '%s')", "multiple choice");
 
-            connection.prepareStatement(sqlStatement).execute();
+            query = connection.prepareStatement(sqlStatement);
+
+            query.setString(1, question);
+
+            query.execute();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -110,10 +113,11 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         try {
 
             for (String answer : answers) {
-                String sqlStatement = String.format("INSERT INTO answer(answer_string, question_id) values('%s', '%s')", answer,
-                        getQuestionId(question));
+                String sqlStatement = String.format("INSERT INTO answer(answer_string, question_id) values(?, '%s')", getQuestionId(question));
                 connection = getConnection();
-                connection.prepareStatement(sqlStatement).execute();
+                PreparedStatement query = connection.prepareStatement(sqlStatement);
+                query.setString(1, answer);
+                query.execute();
             }
 
         } catch (SQLException e) {
