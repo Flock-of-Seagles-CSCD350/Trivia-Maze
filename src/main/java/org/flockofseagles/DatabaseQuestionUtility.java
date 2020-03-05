@@ -69,9 +69,11 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         connection = getConnection();
 
         try {
-            String sqlStatement = String.format("SELECT question_id from question WHERE question_string = '%s'", question);
+            String sqlStatement = "SELECT question_id from question WHERE question_string = ?";
 
-            ResultSet rs = connection.prepareStatement(sqlStatement).executeQuery();
+            PreparedStatement query = connection.prepareStatement(sqlStatement);
+            query.setString(1, question);
+            ResultSet rs = query.executeQuery();
 
             if (rs.next())
                 return rs.getInt(1);
@@ -132,10 +134,13 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         connection = getConnection();
 
         try {
-            String sqlStatement = String.format("DELETE FROM question WHERE question_string = '%s'", question);
-            connection.prepareStatement(sqlStatement).executeUpdate();
+            String sqlStatement = "DELETE FROM question WHERE question_string = ?";
 
-            System.out.println("question removed");
+            PreparedStatement query = connection.prepareStatement(sqlStatement);
+            query.setString(1, question);
+            query.executeUpdate();
+
+            System.out.println("Question removed");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -148,11 +153,12 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         connection = getConnection();
 
         try {
-            String sqlStatement = String.format("UPDATE question SET question_string = '%s' WHERE question_string = '%s'",
-                    newQuestion,
-                    oldQuestion);
+            String sqlStatement = "UPDATE question SET question_string = ? WHERE question_string = ?";
 
-            connection.prepareStatement(sqlStatement).execute();
+            PreparedStatement query = connection.prepareStatement(sqlStatement);
+            query.setString(1, newQuestion);
+            query.setString(2, oldQuestion);
+            query.executeUpdate();
 
             System.out.println("question changed");
 
@@ -168,9 +174,12 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         connection = getConnection();
 
         try {
-            String sqlStatement = String.format("INSERT INTO answer(answer_string, question_id) values('%s', '%s')", answer,
-                    getQuestionId(question));
-            connection.prepareStatement(sqlStatement).execute();
+            String sqlStatement = String.format("INSERT INTO answer(answer_string, question_id) values(?, '%s')", getQuestionId(question));
+            PreparedStatement query = connection.prepareStatement(sqlStatement);
+            query.setString(1, answer);
+            query.execute();
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -183,11 +192,16 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         connection = getConnection();
 
         try {
-            String sqlStatement = String.format("UPDATE answer SET answer_string = '%s' WHERE question_id = '%s' AND answer_string = '%s'",
-                    newAnswer, getQuestionId(question), oldAnswer);
-            connection.prepareStatement(sqlStatement).execute();
+            String sqlStatement = String.format("UPDATE answer SET answer_string = ? WHERE question_id = '%s' AND answer_string = ?", getQuestionId(question));
+            PreparedStatement query =  connection.prepareStatement(sqlStatement);
+
+            query.setString(1, newAnswer);
+            query.setString(2, oldAnswer);
+
+            query.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+
         }
 
         closeConnection();
@@ -198,10 +212,11 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         connection = getConnection();
 
         try {
-            String sqlStatement = String.format("DELETE FROM answer WHERE question_id = '%s' AND answer_string = '%s'",
-                    getQuestionId(question),
-                    answer);
-            connection.prepareStatement(sqlStatement).execute();
+            String sqlStatement = String.format("DELETE FROM answer WHERE question_id = '%s' AND answer_string = ?",
+                    getQuestionId(question));
+            PreparedStatement query =  connection.prepareStatement(sqlStatement);
+            query.setString(1, answer);
+            query.execute();
 
         } catch (SQLException e) {
             e.printStackTrace();
