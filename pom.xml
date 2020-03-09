@@ -134,11 +134,11 @@
                         <configuration>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>project-classifier</shadedClassifierName>
-                            <outputFile>shade\${project.artifactId}.jar</outputFile>
+                            <outputFile>target\${project.artifactId}.jar</outputFile>
                             <transformers>
                                 <transformer implementation=
                                                      "org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>org.flockofseagles.ui.Launcher</mainClass>
+                                    <mainClass>org.flockofseagles.TriviaMaze</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
@@ -158,11 +158,11 @@
                         </goals>
                         <configuration>
                             <headerType>gui</headerType>
-                            <outfile>target/gui.exe</outfile>
-                            <jar>shade/trivia-maze.jar</jar>
+                            <outfile>target/triviamaze.exe</outfile>
+                            <jar>target/trivia-maze.jar</jar>
                             <errTitle>triviamaze</errTitle>
                             <classPath>
-                                <mainClass>org.flockofseagles.ui.Launcher</mainClass>
+                                <mainClass>org.flockofseagles.TriviaMaze</mainClass>
                             </classPath>
                             <jre>
                                 <minVersion>1.8.0</minVersion>
