@@ -28,8 +28,8 @@ public class PlayFieldTests {
     @BeforeEach
     public void setup() {
         testCanvas = new Canvas();
-        p = new PlayField(testCanvas);
-        p.initializePlayField();
+        p = new PlayField(testCanvas, 1);
+        p.initializePlayField(1);
     }
 
     @Test
@@ -47,7 +47,7 @@ public class PlayFieldTests {
     @Test
     public void playField_Constructor_throwsException_onNullArgument() {
         assertThrows(IllegalArgumentException.class, () -> {
-            PlayField testField = new PlayField(null);
+            PlayField testField = new PlayField(null, 1);
         });
     }
 
