@@ -10,9 +10,17 @@ import java.util.Properties;
 
 public class DatabaseQuestionUtility implements QuestionUtility {
 
-    private static Connection connection = null;
+    private static Connection connection;
+    private String dbName;
 
     public DatabaseQuestionUtility() {
+        this.dbName = "questions";
+        createTables();
+        addInitialQuestionSets();
+    }
+
+    public DatabaseQuestionUtility(final String dbName) {
+        this.dbName = dbName;
         createTables();
         addInitialQuestionSets();
     }
@@ -337,7 +345,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
     private Connection getConnection() {
 
         Properties connectionProperties;
-        String connectionString = String.format("jdbc:sqlite:%s", "questions.sqlite");
+        String connectionString = String.format("jdbc:sqlite:%s", this.dbName + ".sqlite");
         SQLiteConfig config = new SQLiteConfig();
         config.enforceForeignKeys(true);
         connectionProperties = config.toProperties();

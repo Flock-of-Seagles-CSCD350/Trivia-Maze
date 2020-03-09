@@ -18,7 +18,7 @@ public class DatabaseQuestionUtilityTests {
 
     @BeforeAll
     public void init() {
-        db = new DatabaseQuestionUtility();
+        db = new DatabaseQuestionUtility("testdb");
     }
 
     @BeforeEach
@@ -39,7 +39,7 @@ public class DatabaseQuestionUtilityTests {
     public static void cleanup() {
 
         try {
-            connection = DriverManager.getConnection("jdbc:sqlite:questions.sqlite");
+            connection = DriverManager.getConnection("jdbc:sqlite:testdb.sqlite");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -358,7 +358,7 @@ public class DatabaseQuestionUtilityTests {
     private void getConnection() {
         final Properties connectionProperties = new Properties();
         connectionProperties.setProperty("PRAGMA foreign_keys", "ON");
-        String connectionString = String.format("jdbc:sqlite:%s", "questions.sqlite");
+        String connectionString = String.format("jdbc:sqlite:%s", "testdb.sqlite");
         try {
             connection = DriverManager.getConnection(connectionString, connectionProperties);
 
