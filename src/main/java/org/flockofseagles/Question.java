@@ -3,7 +3,9 @@ package org.flockofseagles;
 import lombok.Getter;
 import lombok.Setter;
 
-public class Question {
+import java.io.Serializable;
+
+public class Question implements Serializable {
 
 	@Getter
 	private String[] possibleAnswers;

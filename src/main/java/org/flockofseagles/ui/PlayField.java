@@ -2,57 +2,65 @@ package org.flockofseagles.ui;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.GridPane;
+import lombok.Getter;
 import org.flockofseagles.DatabaseQuestionUtility;
 import org.flockofseagles.Question;
+import org.flockofseagles.util.DataStore;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class PlayField extends GridPane {
-    protected Canvas[][] field;
-    protected Player player = new Player(0, 0);
-    protected Question q;
-    private ArrayList<Wall> walls = new ArrayList<>();
-    private List<Question> questionList;
-    protected boolean correctAnswer = false;
 
+	protected Canvas[][]      field;
+	protected Question        q;
+	private   ArrayList<Wall> walls         = new ArrayList<>();
+	protected boolean         correctAnswer = false;
 
-    public PlayField(Canvas canvas) {
-        super();
+	@Getter
+	private DataStore dataStore;
 
-        if (canvas == null)
-            throw new IllegalArgumentException("Null canvas object passed into PlayField Constructor");
+	public PlayField(Canvas canvas) {
+		super();
 
-        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
-        questionList = db.loadQuestionSet();
+		if (canvas == null) {
+			throw new IllegalArgumentException("Null canvas object passed into PlayField Constructor");
+		}
 
-        this.setWidth(canvas.getWidth());
-        this.setHeight(canvas.getHeight());
-        this.field = initializePlayField();
-        setWalls();
-    }
+		HashMap<Question, Boolean> questions = new HashMap<>();
+		DatabaseQuestionUtility    db        = new DatabaseQuestionUtility();
+		db.loadQuestionSet().forEach(question -> questions.put(question, false));
 
-    public Canvas[][] initializePlayField() {
-        int rows = 9;
-        int cols = 9;
-        Canvas[][] cArra = new Canvas[rows][cols];
-        Canvas canvas;
+		// Set up data store for serialization and save states
+		// TODO: Make the rows/cols random from 4-9
+		dataStore = new DataStore(9, 9, new Player(0, 0), questions);
 
-        //rows
-        for (int i = 0; i < rows; i++) {
-            //cols
-            for (int j = 0; j < cols; j++) {
-                canvas = new Canvas(this.getWidth() / rows, this.getHeight() / cols);
-                this.add(canvas, j, i, 1, 1);
-                cArra[i][j] = canvas;
-                cArra[i][j].setUserData("Empty");
-            }
-        }
-        return cArra;
-    }
+		this.setWidth(canvas.getWidth());
+		this.setHeight(canvas.getHeight());
+		this.field = initializePlayField();
+		setWalls();
+	}
+
+	// TODO: Make the rows/cols random from 4-9
+	public Canvas[][] initializePlayField() {
+		int        rows  = 9;
+		int        cols  = 9;
+		Canvas[][] cArra = new Canvas[rows][cols];
+		Canvas     canvas;
+
+		//rows
+		for (int i = 0; i < rows; i++) {
+			//cols
+			for (int j = 0; j < cols; j++) {
+				canvas = new Canvas(this.getWidth() / rows, this.getHeight() / cols);
+				this.add(canvas, j, i, 1, 1);
+				cArra[i][j] = canvas;
+				cArra[i][j].setUserData("Empty");
+			}
+		}
+		return cArra;
+	}
 
     public void setMaze() {
         Canvas canvas;
@@ -64,8 +72,8 @@ public class PlayField extends GridPane {
             //cols
             for (int j = 0; j < this.field.length; j++) {
                 if (i == 0 && j == 0) {
-                    canvas = this.field[i][j];
-                    player.draw(canvas);
+	                canvas = this.field[i][j];
+	                dataStore.getPlayer().draw(canvas);
                 }
 
                 // if current row is an even number
@@ -91,67 +99,67 @@ public class PlayField extends GridPane {
     }
 
     public void updatePlayer(int i) {
-        Canvas canvas = getCanvas(player.xVal, player.yVal);
-        Wall w;
+	    Canvas canvas = getCanvas(dataStore.getPlayer().xVal, dataStore.getPlayer().yVal);
+	    Wall   w;
 
         //move up
         if (i == 1) {
-            w = getWall(player.xVal - 1, player.yVal);
+	        w = getWall(dataStore.getPlayer().xVal - 1, dataStore.getPlayer().yVal);
 
             if (correctAnswer) {
-                w.isPassable = true;
-                clearCanvas(canvas);
-                canvas = this.field[player.xVal - 2][player.yVal];
-                player.draw(canvas);
-                player.xVal = player.xVal - 2;
+	            w.isPassable = true;
+	            clearCanvas(canvas);
+	            canvas = this.field[dataStore.getPlayer().xVal - 2][dataStore.getPlayer().yVal];
+	            dataStore.getPlayer().draw(canvas);
+	            dataStore.getPlayer().xVal = dataStore.getPlayer().xVal - 2;
             } else {
-                canvas = this.field[player.xVal - 1][player.yVal];
-                w.isLocked = true;
+	            canvas     = this.field[dataStore.getPlayer().xVal - 1][dataStore.getPlayer().yVal];
+	            w.isLocked = true;
                 w.drawHorzLocked(canvas);
             }
         } else if (i == 2) {    //move down
 
-            w = getWall(player.xVal + 1, player.yVal);
+	        w = getWall(dataStore.getPlayer().xVal + 1, dataStore.getPlayer().yVal);
 
             if (correctAnswer) {
-                w.isPassable = true;
-                clearCanvas(canvas);
-                canvas = this.field[player.xVal + 2][player.yVal];
-                player.draw(canvas);
-                player.xVal = player.xVal + 2;
+	            w.isPassable = true;
+	            clearCanvas(canvas);
+	            canvas = this.field[dataStore.getPlayer().xVal + 2][dataStore.getPlayer().yVal];
+	            dataStore.getPlayer().draw(canvas);
+	            dataStore.getPlayer().xVal = dataStore.getPlayer().xVal + 2;
             } else {
-                canvas = this.field[player.xVal + 1][player.yVal];
-                w.isLocked = true;
+	            canvas     = this.field[dataStore.getPlayer().xVal + 1][dataStore.getPlayer().yVal];
+	            w.isLocked = true;
                 w.drawHorzLocked(canvas);
             }
         } else if (i == 3) { //move left
 
-            w = getWall(player.xVal, player.yVal - 1);
+	        w = getWall(dataStore.getPlayer().xVal, dataStore.getPlayer().yVal - 1);
 
             if (correctAnswer) {
-                w.isPassable = true;
-                clearCanvas(canvas);
-                canvas = this.field[player.xVal][player.yVal - 2];
-                player.draw(canvas);
-                player.yVal = player.yVal - 2;
+	            w.isPassable = true;
+	            clearCanvas(canvas);
+	            canvas = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal - 2];
+	            dataStore.getPlayer().draw(canvas);
+	            dataStore.getPlayer().yVal = dataStore.getPlayer().yVal - 2;
             } else {
-                canvas = this.field[player.xVal][player.yVal - 1];
-                w.isLocked = true;
+	            canvas     = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal - 1];
+	            w.isLocked = true;
                 w.drawVertLocked(canvas);
             }
         } else if (i == 4) { //move right
 
-            w = getWall(player.xVal, player.yVal + 1);
+	        w = getWall(dataStore.getPlayer().xVal, dataStore.getPlayer().yVal + 1);
 
             if (correctAnswer) {
-                w.isPassable = true;
-                clearCanvas(canvas);
-                canvas = this.field[player.xVal][player.yVal + 2];
-                player.draw(canvas);
-                player.yVal = player.yVal + 2;
+	            w.isPassable = true;
+	            clearCanvas(canvas);
+	            canvas = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal + 2];
+	            dataStore.getPlayer().draw(canvas);
+	            dataStore.getPlayer().yVal = dataStore.getPlayer().yVal + 2;
             } else {
-                canvas = this.field[player.xVal][player.yVal + 1];
-                w.isLocked = true;
+	            canvas     = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal + 1];
+	            w.isLocked = true;
                 w.drawVertLocked(canvas);
             }
         }
@@ -200,7 +208,9 @@ public class PlayField extends GridPane {
     }
 
     public Question getQuestion() {
-        return this.questionList.remove(0);
+	    var question = (Question) this.dataStore.getQuestions().keySet().toArray()[0];
+	    this.dataStore.getQuestions().remove(question);
+	    return question;
     }
 
     public int getLength() {

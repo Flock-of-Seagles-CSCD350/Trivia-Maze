@@ -10,16 +10,14 @@ public class GUI extends Application {
 
 	PlayField field;
 
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
 		launch(args);
 	}
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-
-		FXMLLoader documentLoader = new FXMLLoader(getClass().getClassLoader().getResource("Document.fxml"));
-		Parent root = documentLoader.load();
+		FXMLLoader              documentLoader    = new FXMLLoader(getClass().getClassLoader().getResource("Document.fxml"));
+		Parent                  root              = documentLoader.load();
 		OptionsLayoutController optionsController = documentLoader.getController();
 		field = OptionsLayoutController.field;
 		Scene scene = new Scene(root, 600, 500);
@@ -30,5 +28,6 @@ public class GUI extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
+
 }
 
