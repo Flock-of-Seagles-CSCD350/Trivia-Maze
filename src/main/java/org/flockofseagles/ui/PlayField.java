@@ -23,71 +23,65 @@ import java.util.Optional;
 import java.util.HashMap;
 
 public class PlayField extends GridPane {
-	protected Canvas[][] field;
-	protected Player player = new Player(0 , 0);
-	protected Question q;
-	ArrayList<Wall> walls = new ArrayList<>();
-	private List<Question> questionList;
-	protected boolean correctAnswer = false;
+    protected Canvas[][] field;
+    protected Player player = new Player(0, 0);
+    protected Question q;
+    ArrayList<Wall> walls = new ArrayList<>();
+    private List<Question> questionList;
+    protected boolean correctAnswer = false;
 
-	@Getter
-	private DataStore dataStore;
+    @Getter
+    private DataStore dataStore;
 
-	public PlayField(Canvas canvas, int diff) {
-		super();
+    public PlayField(Canvas canvas, int diff) {
+        super();
 
-		if(canvas == null)
-			throw new IllegalArgumentException("Null canvas object passed into PlayField Constructor");
+        if (canvas == null)
+            throw new IllegalArgumentException("Null canvas object passed into PlayField Constructor");
 
-		HashMap<Question, Boolean> questions = new HashMap<>();
-		DatabaseQuestionUtility    db        = new DatabaseQuestionUtility();
-		db.loadQuestionSet().forEach(question -> questions.put(question, false));
+        HashMap<Question, Boolean> questions = new HashMap<>();
+        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+        db.loadQuestionSet().forEach(question -> questions.put(question, false));
 
-		// Set up data store for serialization and save states
-		// TODO: Make the rows/cols random from 4-9
-		dataStore = new DataStore(9, 9, new Player(0, 0), questions);
+        // Set up data store for serialization and save states
+        // TODO: Make the rows/cols random from 4-9
+        dataStore = new DataStore(9, 9, new Player(0, 0), questions);
 
-		this.setWidth(canvas.getWidth());
-		this.setHeight(canvas.getHeight());
-		this.field = initializePlayField(diff);
-		setWalls();
-	}
+        this.setWidth(canvas.getWidth());
+        this.setHeight(canvas.getHeight());
+        this.field = initializePlayField(diff);
+        setWalls();
+    }
 
-	public Canvas[][] initializePlayField(int l) {
-		int rows, cols;
-		Canvas[][] cArra;
-		Canvas canvas;
+    public Canvas[][] initializePlayField(int l) {
+        int rows, cols;
+        Canvas[][] cArra;
+        Canvas canvas;
 
-		if(l == 1) //normal difficulty
-		{
-			rows = 9;
-			cols = 9;
-		}
-		else if(l == 2)
-		{
-			rows = 13;
-			cols = 13;
-		}
-		else
-		{
-			rows = 21;
-			cols = 21;
-		}
+        if (l == 1) { //normal difficulty
+            rows = 9;
+            cols = 9;
+        } else if (l == 2) {
+            rows = 13;
+            cols = 13;
+        } else {
+            rows = 21;
+            cols = 21;
+        }
 
-		cArra = new Canvas[rows][cols];
+        cArra = new Canvas[rows][cols];
 
-		for (int i = 0; i < rows; i++)
-		{
-			//cols
-			for (int j = 0; j < cols; j++) {
-				canvas = new Canvas(this.getWidth() / rows, this.getHeight() / cols);
-				this.add(canvas, j, i, 1, 1);
-				cArra[i][j] = canvas;
-				cArra[i][j].setUserData("Empty");
-			}
-		}
-		return cArra;
-	}
+        for (int i = 0; i < rows; i++) {
+            //cols
+            for (int j = 0; j < cols; j++) {
+                canvas = new Canvas(this.getWidth() / rows, this.getHeight() / cols);
+                this.add(canvas, j, i, 1, 1);
+                cArra[i][j] = canvas;
+                cArra[i][j].setUserData("Empty");
+            }
+        }
+        return cArra;
+    }
 
     public void setMaze() {
         Canvas canvas;
@@ -99,8 +93,8 @@ public class PlayField extends GridPane {
             //cols
             for (int j = 0; j < this.field.length; j++) {
                 if (i == 0 && j == 0) {
-	                canvas = this.field[i][j];
-	                dataStore.getPlayer().draw(canvas);
+                    canvas = this.field[i][j];
+                    dataStore.getPlayer().draw(canvas);
                 }
 
                 // if current row is an even number
@@ -117,93 +111,95 @@ public class PlayField extends GridPane {
                     canvas = this.field[i][j];
                     w = getWall(i, j);
                     w.drawMid(canvas);
+                } else if (j == this.field.length - 1 && i == this.field.length - 1) {
+                    canvas = this.field[i][j];
+                    clearCanvas(canvas);
                 } else {
                     canvas = this.field[i][j];
                 }
             }
         }
 
-	}
+    }
 
-	public void updatePlayer(int i)
-	{
-		Wall w;
-		Media pick;
-		MediaPlayer mPlayer;
-	    Canvas canvas = getCanvas(dataStore.getPlayer().xVal, dataStore.getPlayer().yVal);
+    public void updatePlayer(int i) {
+        Wall w;
+        Media pick;
+        MediaPlayer mPlayer;
+        Canvas canvas = getCanvas(dataStore.getPlayer().xVal, dataStore.getPlayer().yVal);
 
         //move up
         if (i == 1) {
-	        w = getWall(dataStore.getPlayer().xVal - 1, dataStore.getPlayer().yVal);
+            w = getWall(dataStore.getPlayer().xVal - 1, dataStore.getPlayer().yVal);
 
             if (correctAnswer) {
-	            w.isPassable = true;
-	            clearCanvas(canvas);
-	            canvas = this.field[dataStore.getPlayer().xVal - 2][dataStore.getPlayer().yVal];
-	            dataStore.getPlayer().draw(canvas);
-	            dataStore.getPlayer().xVal = dataStore.getPlayer().xVal - 2;
+                w.isPassable = true;
+                clearCanvas(canvas);
+                canvas = this.field[dataStore.getPlayer().xVal - 2][dataStore.getPlayer().yVal];
+                dataStore.getPlayer().draw(canvas);
+                dataStore.getPlayer().xVal = dataStore.getPlayer().xVal - 2;
             } else {
-				pick = new Media(Paths.get("src/main/resources/sounds/close_door.wav").toUri().toString());
-				mPlayer = new MediaPlayer(pick);
-				mPlayer.play();
-            	canvas     = this.field[dataStore.getPlayer().xVal - 1][dataStore.getPlayer().yVal];
-	            w.isLocked = true;
+                pick = new Media(Paths.get("src/main/resources/sounds/close_door.wav").toUri().toString());
+                mPlayer = new MediaPlayer(pick);
+                mPlayer.play();
+                canvas = this.field[dataStore.getPlayer().xVal - 1][dataStore.getPlayer().yVal];
+                w.isLocked = true;
                 w.drawHorzLocked(canvas);
             }
         } else if (i == 2) {    //move down
 
-	        w = getWall(dataStore.getPlayer().xVal + 1, dataStore.getPlayer().yVal);
+            w = getWall(dataStore.getPlayer().xVal + 1, dataStore.getPlayer().yVal);
             if (correctAnswer) {
-	            w.isPassable = true;
-	            clearCanvas(canvas);
-	            canvas = this.field[dataStore.getPlayer().xVal + 2][dataStore.getPlayer().yVal];
-	            dataStore.getPlayer().draw(canvas);
-	            dataStore.getPlayer().xVal = dataStore.getPlayer().xVal + 2;
+                w.isPassable = true;
+                clearCanvas(canvas);
+                canvas = this.field[dataStore.getPlayer().xVal + 2][dataStore.getPlayer().yVal];
+                dataStore.getPlayer().draw(canvas);
+                dataStore.getPlayer().xVal = dataStore.getPlayer().xVal + 2;
             } else {
 
-				pick = new Media(Paths.get("src/main/resources/sounds/close_door.wav").toUri().toString());
-				mPlayer = new MediaPlayer(pick);
-				mPlayer.play();
+                pick = new Media(Paths.get("src/main/resources/sounds/close_door.wav").toUri().toString());
+                mPlayer = new MediaPlayer(pick);
+                mPlayer.play();
 
-            	canvas     = this.field[dataStore.getPlayer().xVal + 1][dataStore.getPlayer().yVal];
-	            w.isLocked = true;
+                canvas = this.field[dataStore.getPlayer().xVal + 1][dataStore.getPlayer().yVal];
+                w.isLocked = true;
                 w.drawHorzLocked(canvas);
             }
         } else if (i == 3) { //move left
 
-	        w = getWall(dataStore.getPlayer().xVal, dataStore.getPlayer().yVal - 1);
+            w = getWall(dataStore.getPlayer().xVal, dataStore.getPlayer().yVal - 1);
 
-	        if (correctAnswer) {
-	            w.isPassable = true;
-	            clearCanvas(canvas);
-	            canvas = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal - 2];
-	            dataStore.getPlayer().draw(canvas);
-	            dataStore.getPlayer().yVal = dataStore.getPlayer().yVal - 2;
+            if (correctAnswer) {
+                w.isPassable = true;
+                clearCanvas(canvas);
+                canvas = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal - 2];
+                dataStore.getPlayer().draw(canvas);
+                dataStore.getPlayer().yVal = dataStore.getPlayer().yVal - 2;
             } else {
-				pick = new Media(Paths.get("src/main/resources/sounds/close_door.wav").toUri().toString());
-				mPlayer = new MediaPlayer(pick);
-				mPlayer.play();
+                pick = new Media(Paths.get("src/main/resources/sounds/close_door.wav").toUri().toString());
+                mPlayer = new MediaPlayer(pick);
+                mPlayer.play();
 
-	        	canvas     = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal - 1];
-	            w.isLocked = true;
+                canvas = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal - 1];
+                w.isLocked = true;
                 w.drawVertLocked(canvas);
             }
         } else if (i == 4) { //move right
 
-	        w = getWall(dataStore.getPlayer().xVal, dataStore.getPlayer().yVal + 1);
+            w = getWall(dataStore.getPlayer().xVal, dataStore.getPlayer().yVal + 1);
             if (correctAnswer) {
-	            w.isPassable = true;
-	            clearCanvas(canvas);
-	            canvas = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal + 2];
-	            dataStore.getPlayer().draw(canvas);
-	            dataStore.getPlayer().yVal = dataStore.getPlayer().yVal + 2;
+                w.isPassable = true;
+                clearCanvas(canvas);
+                canvas = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal + 2];
+                dataStore.getPlayer().draw(canvas);
+                dataStore.getPlayer().yVal = dataStore.getPlayer().yVal + 2;
             } else {
-				pick = new Media(Paths.get("src/main/resources/sounds/close_door.wav").toUri().toString());
-				mPlayer = new MediaPlayer(pick);
-				mPlayer.play();
+                pick = new Media(Paths.get("src/main/resources/sounds/close_door.wav").toUri().toString());
+                mPlayer = new MediaPlayer(pick);
+                mPlayer.play();
 
-				canvas     = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal + 1];
-	            w.isLocked = true;
+                canvas = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal + 1];
+                w.isLocked = true;
                 w.drawVertLocked(canvas);
             }
         }
@@ -215,25 +211,22 @@ public class PlayField extends GridPane {
         canvas.setUserData("Empty");
     }
 
-	public void clearPlayField()
-	{
-		Canvas canvas;
+    public void clearPlayField() {
+        Canvas canvas;
 
-		for(int i = 0; i < this.field.length; i++)
-		{
-			for(int j = 0; j < this.field.length; j++)
-			{
-				canvas = this.field[i][j];
-				GraphicsContext g = canvas.getGraphicsContext2D();
-				g.clearRect(0,0,canvas.getWidth(), canvas.getHeight());
-				canvas.setUserData("Empty");
-			}
-		}
-	}
+        for (int i = 0; i < this.field.length; i++) {
+            for (int j = 0; j < this.field.length; j++) {
+                canvas = this.field[i][j];
+                GraphicsContext g = canvas.getGraphicsContext2D();
+                g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+                canvas.setUserData("Empty");
+            }
+        }
+    }
 
-	public Canvas getCanvas(int x, int y) {
-		return this.field[x][y];
-	}
+    public Canvas getCanvas(int x, int y) {
+        return this.field[x][y];
+    }
 
     public Wall getWall(int x, int y) {
         for (Wall w : walls) {
@@ -268,9 +261,9 @@ public class PlayField extends GridPane {
     }
 
     public Question getQuestion() {
-	    var question = (Question) this.dataStore.getQuestions().keySet().toArray()[0];
-	    this.dataStore.getQuestions().remove(question);
-	    return question;
+        var question = (Question) this.dataStore.getQuestions().keySet().toArray()[0];
+        this.dataStore.getQuestions().remove(question);
+        return question;
     }
 
     public int getLength() {
@@ -314,10 +307,9 @@ public class PlayField extends GridPane {
         }
     }
 
-	public boolean isEnd(int x , int y)
-	{
-		return x == this.getLength() - 1 && y == this.getLength() - 1;
-	}
+    public boolean isEnd(int x, int y) {
+        return x == this.getLength() - 1 && y == this.getLength() - 1;
+    }
 
 
 }
