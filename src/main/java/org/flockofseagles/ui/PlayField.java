@@ -131,7 +131,6 @@ public class PlayField extends GridPane {
 		Media pick;
 		MediaPlayer mPlayer;
 	    Canvas canvas = getCanvas(dataStore.getPlayer().xVal, dataStore.getPlayer().yVal);
-	    Wall   w;
 
         //move up
         if (i == 1) {
