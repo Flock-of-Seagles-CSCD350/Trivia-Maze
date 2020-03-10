@@ -70,6 +70,12 @@
             <artifactId>maven-shade-plugin</artifactId>
             <version>3.2.2</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.json/json -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20190722</version>
+        </dependency>
 
     </dependencies>
 
@@ -113,12 +119,6 @@
                             <version>1.18.12</version>
                         </path>
                     </annotationProcessorPaths>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M4</version>
-                <configuration>
                 </configuration>
             </plugin>
             <plugin>

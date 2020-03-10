@@ -11,8 +11,10 @@ import javafx.scene.layout.GridPane;
 import lombok.Getter;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import org.flockofseagles.APIQuestionUtility;
 import org.flockofseagles.DatabaseQuestionUtility;
 import org.flockofseagles.Question;
+import org.flockofseagles.QuestionUtility;
 import org.flockofseagles.util.DataStore;
 
 import java.io.IOException;
@@ -40,7 +42,7 @@ public class PlayField extends GridPane {
             throw new IllegalArgumentException("Null canvas object passed into PlayField Constructor");
 
         HashMap<Question, Boolean> questions = new HashMap<>();
-        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
+        QuestionUtility db = new APIQuestionUtility();
         db.loadQuestionSet().forEach(question -> questions.put(question, false));
 
         // Set up data store for serialization and save states

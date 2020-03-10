@@ -1,7 +1,13 @@
 package org.flockofseagles;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
+import org.json.*;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +21,40 @@ public class APIQuestionUtility implements QuestionUtility {
 
     @Override
     public List<Question> loadQuestionSet() {
+        String uri = "https://opentdb.com/api.php?amount=50&category=21&type=multiple";
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(uri))
+                .header("Accept", "application/json")
+                .build();
+
+        HttpResponse<String> response =
+                null;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            JSONObject jsonObject = new JSONObject(response.body());
+            JSONArray responseArray = (JSONArray) jsonObject.get("results");
+            responseArray.forEach(item -> {
+                JSONObject jsonItem = (JSONObject) item;
+                String questionString = jsonItem.getString("question");
+
+                List<String> possibleAnswers = new ArrayList<String>();
+
+                possibleAnswers.add(jsonItem.getString("correct_answer"));
+
+                JSONArray answersArray = jsonItem.getJSONArray("incorrect_answers");
+
+                for (Object o : answersArray)
+                    possibleAnswers.add((String) o);
+
+                addQuestion(questionString, possibleAnswers.toArray(String[]::new));
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return new ArrayList<Question>(questionList);
     }
 
@@ -105,6 +145,6 @@ public class APIQuestionUtility implements QuestionUtility {
             questionList.set(questionId, new Question(answersList.toArray(String[]::new), 0, q.getQuestion()));
 
         } else
-            throw new IllegalArgumentException("Invalid question string APIQuestionUtility editAnswer");
+            throw new IllegalArgumentException("Invalid question string APIQuestionUtility removeAnswer");
     }
 }
