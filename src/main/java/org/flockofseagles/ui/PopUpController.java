@@ -133,13 +133,13 @@ public class PopUpController extends Dialog<Void> implements Initializable
 
 		if(b)
 		{
-			pick = new Media(Paths.get("src/main/resources/sounds/cheers.wav").toUri().toString());
+			pick = new Media(getClass().getClassLoader().getResource("sounds/cheers.wav").toString());
 			player = new MediaPlayer(pick);
 			player.play();
 		}
 		else
 		{
-			pick = new Media(Paths.get("src/main/resources/sounds/boos.wav").toUri().toString());
+			pick = new Media(getClass().getClassLoader().getResource("sounds/boos.wav").toString());
 			player = new MediaPlayer(pick);
 			player.play();
 		}

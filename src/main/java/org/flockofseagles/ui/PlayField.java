@@ -139,7 +139,7 @@ public class PlayField extends GridPane {
                 dataStore.getPlayer().draw(canvas);
                 dataStore.getPlayer().xVal = dataStore.getPlayer().xVal - 2;
             } else {
-                pick = new Media(Paths.get("src/main/resources/sounds/close_door.wav").toUri().toString());
+                pick = new Media(getClass().getClassLoader().getResource("sounds/close_door.wav").toString());
                 mPlayer = new MediaPlayer(pick);
                 mPlayer.play();
                 canvas = this.field[dataStore.getPlayer().xVal - 1][dataStore.getPlayer().yVal];
@@ -157,7 +157,7 @@ public class PlayField extends GridPane {
                 dataStore.getPlayer().xVal = dataStore.getPlayer().xVal + 2;
             } else {
 
-                pick = new Media(Paths.get("src/main/resources/sounds/close_door.wav").toUri().toString());
+                pick = new Media(getClass().getClassLoader().getResource("sounds/close_door.wav").toString());
                 mPlayer = new MediaPlayer(pick);
                 mPlayer.play();
 
@@ -176,7 +176,7 @@ public class PlayField extends GridPane {
                 dataStore.getPlayer().draw(canvas);
                 dataStore.getPlayer().yVal = dataStore.getPlayer().yVal - 2;
             } else {
-                pick = new Media(Paths.get("src/main/resources/sounds/close_door.wav").toUri().toString());
+                pick = new Media(getClass().getClassLoader().getResource("sounds/close_door.wav").toString());
                 mPlayer = new MediaPlayer(pick);
                 mPlayer.play();
 
@@ -194,7 +194,7 @@ public class PlayField extends GridPane {
                 dataStore.getPlayer().draw(canvas);
                 dataStore.getPlayer().yVal = dataStore.getPlayer().yVal + 2;
             } else {
-                pick = new Media(Paths.get("src/main/resources/sounds/close_door.wav").toUri().toString());
+                pick = new Media(getClass().getClassLoader().getResource("sounds/close_door.wav").toString());
                 mPlayer = new MediaPlayer(pick);
                 mPlayer.play();
 
