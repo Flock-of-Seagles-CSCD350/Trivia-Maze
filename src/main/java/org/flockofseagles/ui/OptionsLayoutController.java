@@ -76,6 +76,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
     public void reInitialize() {
         field.clearPlayField();
         field = null;
+        System.gc();
         field = new PlayField(gameCanvas, difficulty);
         field.setMaze();
         Image img = new Image("/images/grass.png");
@@ -87,9 +88,12 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
     public void onKeyPressed(KeyEvent keyEvent) {
         if (isPlaying) {
             Wall w;
+            field.correctAnswer = false;
+
+            System.out.println(String.format("X value: %s Y value: %s", field.getDataStore().getPlayer().xVal, field.getDataStore().getPlayer().yVal));
 
             if (new KeyCodeCombination(KeyCode.UP).match(keyEvent)) {
-				if (field.getDataStore().getPlayer().xVal == 0) {
+                if (field.getDataStore().getPlayer().xVal == 0) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Out of bounds!");
                     alert.setHeaderText("Cannot move up!");
@@ -99,28 +103,24 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
                     field.updatePlayer(1);
                 } else {
                     try {
-						w = field.getWall(field.getDataStore().getPlayer().xVal - 1, field.getDataStore().getPlayer().yVal);
+                        w = field.getWall(field.getDataStore().getPlayer().xVal - 1, field.getDataStore().getPlayer().yVal);
 
                         if (w.isPassable) {
                             field.correctAnswer = true;
                             field.updatePlayer(1);
                         } else if (w.isLocked) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("False Start!");
-                            alert.setHeaderText("That door is locked! Try another one.");
-                            alert.show();
+                            showLockedDoorPopup();
                         } else {
                             openPopUp();
                             field.updatePlayer(1);
                         }
-                        field.correctAnswer = false;
 
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             } else if (keyEvent.getCode() == KeyCode.DOWN) {
-				if (field.getDataStore().getPlayer().xVal == (field.getLength() - 1)) {
+                if (field.getDataStore().getPlayer().xVal == (field.getLength() - 1)) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Out of bounds!");
                     alert.setHeaderText("Cannot move down!");
@@ -130,21 +130,17 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
                     field.updatePlayer(2);
                 } else {
                     try {
-						w = field.getWall(field.getDataStore().getPlayer().xVal + 1, field.getDataStore().getPlayer().yVal);
+                        w = field.getWall(field.getDataStore().getPlayer().xVal + 1, field.getDataStore().getPlayer().yVal);
 
                         if (w.isPassable) {
                             field.correctAnswer = true;
                             field.updatePlayer(2);
                         } else if (w.isLocked) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("False Start!");
-                            alert.setHeaderText("That door is locked! Try another one.");
-                            alert.show();
+                            showLockedDoorPopup();
                         } else {
                             openPopUp();
                             field.updatePlayer(2);
                         }
-                        field.correctAnswer = false;
 
 
                     } catch (IOException e) {
@@ -153,7 +149,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
                 }
             } else if (keyEvent.getCode() == KeyCode.LEFT) {
 
-				if (field.getDataStore().getPlayer().yVal == 0) {
+                if (field.getDataStore().getPlayer().yVal == 0) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Out of bounds!");
                     alert.setHeaderText("Cannot move left");
@@ -163,28 +159,24 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
                     field.updatePlayer(3);
                 } else {
                     try {
-						w = field.getWall(field.getDataStore().getPlayer().xVal, field.getDataStore().getPlayer().yVal - 1);
+                        w = field.getWall(field.getDataStore().getPlayer().xVal, field.getDataStore().getPlayer().yVal - 1);
 
                         if (w.isPassable) {
                             field.correctAnswer = true;
                             field.updatePlayer(3);
                         } else if (w.isLocked) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("False Start!");
-                            alert.setHeaderText("That door is locked! Try another one.");
-                            alert.show();
+                            showLockedDoorPopup();
                         } else {
                             openPopUp();
                             field.updatePlayer(3);
                         }
-                        field.correctAnswer = false;
 
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
             } else if (keyEvent.getCode() == KeyCode.RIGHT) {
-				if (field.getDataStore().getPlayer().yVal == (field.getLength() - 1)) {
+                if (field.getDataStore().getPlayer().yVal == (field.getLength() - 1)) {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Out of bounds!");
                     alert.setHeaderText("Cannot move right");
@@ -194,21 +186,17 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
                     field.updatePlayer(4);
                 } else {
                     try {
-						w = field.getWall(field.getDataStore().getPlayer().xVal, field.getDataStore().getPlayer().yVal + 1);
+                        w = field.getWall(field.getDataStore().getPlayer().xVal, field.getDataStore().getPlayer().yVal + 1);
 
                         if (w.isPassable) {
                             field.correctAnswer = true;
                             field.updatePlayer(4);
                         } else if (w.isLocked) {
-                            Alert alert = new Alert(Alert.AlertType.ERROR);
-                            alert.setTitle("False Start!");
-                            alert.setHeaderText("That door is locked! Try another one.");
-                            alert.show();
+                            showLockedDoorPopup();
                         } else {
                             openPopUp();
                             field.updatePlayer(4);
                         }
-                        field.correctAnswer = false;
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -238,21 +226,45 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
                 if (result.get() == ButtonType.OK) {
                     alert.close();
 
-                    Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
-                    alert2.setTitle("New Game");
-                    alert2.setHeaderText("Would you like to Play again?");
-                    Button btnYES = (Button) alert2.getDialogPane().lookupButton(ButtonType.OK);
-                    btnYES.setText("YES");
-                    alert2.getButtonTypes().add(ButtonType.NO);
-                    Optional<ButtonType> choice = alert2.showAndWait();
-
-                    if (choice.get() == ButtonType.OK) {
-                        reInitialize();
-                    } else {
-                        System.exit(0);
-                    }
+                    playAgainPopup();
                 }
             }
+
+            if (!field.mazeIsSolvable(field.getDataStore().getPlayer().xVal, field.getDataStore().getPlayer().yVal, field.getLength() - 1, field.getLength() - 1)) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("You lost :(");
+                alert.setHeaderText("Maybe next time");
+                Optional<ButtonType> result = alert.showAndWait();
+
+                if (result.get() == ButtonType.OK) {
+                    alert.close();
+
+                    playAgainPopup();
+                }
+            }
+        }
+    }
+
+    private void showLockedDoorPopup() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("False Start!");
+        alert.setHeaderText("That door is locked! Try another one.");
+        alert.show();
+    }
+
+    private void playAgainPopup() {
+        Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+        alert2.setTitle("New Game");
+        alert2.setHeaderText("Would you like to Play again?");
+        Button btnYES = (Button) alert2.getDialogPane().lookupButton(ButtonType.OK);
+        btnYES.setText("YES");
+        alert2.getButtonTypes().add(ButtonType.NO);
+        Optional<ButtonType> choice = alert2.showAndWait();
+
+        if (choice.get() == ButtonType.OK) {
+            reInitialize();
+        } else {
+            System.exit(0);
         }
     }
 

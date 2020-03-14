@@ -222,6 +222,11 @@ public class PlayField extends GridPane {
                 canvas.setUserData("Empty");
             }
         }
+
+        dataStore.getPlayer().xVal = 0;
+        dataStore.getPlayer().yVal = 0;
+        walls = null;
+        System.gc();
     }
 
     public Canvas getCanvas(int x, int y) {
