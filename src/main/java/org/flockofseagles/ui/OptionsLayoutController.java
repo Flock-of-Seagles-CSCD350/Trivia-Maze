@@ -228,7 +228,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
                 }
             }
 
-            if (field.isEnd(field.player.xVal, field.player.yVal)) {
+            if (field.isEnd(field.getDataStore().getPlayer().xVal, field.getDataStore().getPlayer().yVal)) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Congratulations!");
                 alert.setHeaderText("Winner winner chicken dinner!\n" +
@@ -249,7 +249,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
                     if (choice.get() == ButtonType.OK) {
                         reInitialize();
                     } else {
-
+                        System.exit(0);
                     }
                 }
             }

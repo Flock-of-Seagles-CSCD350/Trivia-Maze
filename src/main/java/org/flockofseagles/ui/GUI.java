@@ -1,21 +1,10 @@
 package org.flockofseagles.ui;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Paint;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import java.util.Optional;
 
 public class GUI extends Application {
 
