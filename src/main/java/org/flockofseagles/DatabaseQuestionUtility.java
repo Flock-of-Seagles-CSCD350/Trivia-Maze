@@ -1,12 +1,17 @@
 package org.flockofseagles;
 
+import org.flockofseagles.util.APIQuestionLoader;
 import org.sqlite.SQLiteConfig;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Properties;
+import java.util.*;
 
 public class DatabaseQuestionUtility implements QuestionUtility {
 
@@ -201,7 +206,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
         try {
             String sqlStatement = String.format("UPDATE answer SET answer_string = ? WHERE question_id = '%s' AND answer_string = ?", getQuestionId(question));
-            PreparedStatement query =  connection.prepareStatement(sqlStatement);
+            PreparedStatement query = connection.prepareStatement(sqlStatement);
 
             query.setString(1, newAnswer);
             query.setString(2, oldAnswer);
@@ -222,7 +227,7 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         try {
             String sqlStatement = String.format("DELETE FROM answer WHERE question_id = '%s' AND answer_string = ?",
                     getQuestionId(question));
-            PreparedStatement query =  connection.prepareStatement(sqlStatement);
+            PreparedStatement query = connection.prepareStatement(sqlStatement);
             query.setString(1, answer);
             query.execute();
 
@@ -255,61 +260,26 @@ public class DatabaseQuestionUtility implements QuestionUtility {
     }
 
     public void addInitialQuestionSets() {
-        ArrayList<String> questionSetList = new ArrayList<>();
 
-        questionSetList.add("A carnivorous animal eats flesh, what does a nucivorous animal eat?");
-        questionSetList.add("Nuts");
-        questionSetList.add("Nothing");
-        questionSetList.add("Fruit");
-        questionSetList.add("Seaweed");
-        questionSetList.add("Where is the train station?");
-        questionSetList.add("Wales");
-        questionSetList.add("Moldova");
-        questionSetList.add("Czech Republic");
-        questionSetList.add("Denmark");
-        questionSetList.add("When was Adolf Hitler appointed as Chancellor of Germany?");
-        questionSetList.add("January 30, 1933");
-        questionSetList.add("September 1, 1939");
-        questionSetList.add("February 27, 1933");
-        questionSetList.add("October 6, 1939");
-        questionSetList.add("The novel Jane Eyre was written by what author? ");
-        questionSetList.add("Charlotte Bronte");
-        questionSetList.add("Emily Bronte");
-        questionSetList.add("Jane Austen");
-        questionSetList.add("Louisa May Alcott");
-        questionSetList.add(
-                "This album, now considered to be one of the greatest of all time, was a commercial failure when it was released.");
-        questionSetList.add("The Velvet Underground and Nico");
-        questionSetList.add("Abbey Road");
-        questionSetList.add("Led Zeppelin IV");
-        questionSetList.add("Pet Sounds");
-        questionSetList.add("Which of these programming languages is a low-level language?");
-        questionSetList.add("Assembly");
-        questionSetList.add("Python");
-        questionSetList.add("C#");
-        questionSetList.add("Pascal");
-        questionSetList.add("In Super Mario Bros., who informs Mario that the princess is in another castle?");
-        questionSetList.add("Toad");
-        questionSetList.add("Luigi");
-        questionSetList.add("Yoshi");
-        questionSetList.add("Bowser");
-        questionSetList.add("Who wrote the song You Know You Like It?");
-        questionSetList.add("AlunaGeorge");
-        questionSetList.add("DJ Snake");
-        questionSetList.add("Steve Aoki");
-        questionSetList.add("Major Lazer");
-        questionSetList.add("Which famous singer was portrayed by actor Kevin Spacey in the 2004 biographical film Beyond the Sea?");
-        questionSetList.add("Bobby Darin");
-        questionSetList.add("Louis Armstrong");
-        questionSetList.add("Frank Sinatra");
-        questionSetList.add("Dean Martin");
-        questionSetList.add("Which character in the Animal Crossing series uses the phrase zip zoom when talking to the player?");
-        questionSetList.add("Scoot");
-        questionSetList.add("Drake");
-        questionSetList.add("Bill");
-        questionSetList.add("Mallary");
+        new APIQuestionLoader().writeQuestionsToFile();
 
-        for (int i = 0; i < 10; i++) {
+        Path path = null;
+        try {
+            path = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("questions.txt")).toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        List<String> questionSetList = null;
+
+        try {
+            assert path != null;
+            questionSetList = Files.readAllLines(path, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        for (int i = 0; i < questionSetList.size() / 5; i++) {
             int questionIndex = i * 5;
 
             var answersArr = new String[4];
