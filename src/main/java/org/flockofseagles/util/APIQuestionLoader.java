@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -60,23 +61,16 @@ public class APIQuestionLoader {
 
     private void addQuestionToFile(String questionText, List<String> possibleAnswers) {
 
-        String questionTxtPath = Objects.requireNonNull(getClass().getClassLoader().getResource("questions.txt")).toString();
-
         try {
-
-            try {
-                Files.write(Paths.get(getClass().getClassLoader().getResource("questions.txt").toURI()), questionText.getBytes(), StandardOpenOption.APPEND);
-            } catch (URISyntaxException e) {
-                e.printStackTrace();
-            }
+                FileOutputStream fos = new FileOutputStream("questions.txt", true);
+                OutputStreamWriter writer = new OutputStreamWriter(fos);
+                writer.append(questionText);
 
             for (String s : possibleAnswers) {
-                try {
-                    Files.write(Paths.get(getClass().getClassLoader().getResource("questions.txt").toURI()), s.getBytes(), StandardOpenOption.APPEND);
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                }
+                writer.append(s);
             }
+
+            writer.close();
 
         } catch (IOException e) {
             e.printStackTrace();

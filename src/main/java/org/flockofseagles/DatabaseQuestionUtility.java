@@ -264,15 +264,10 @@ public class DatabaseQuestionUtility implements QuestionUtility {
         new APIQuestionLoader().writeQuestionsToFile();
 
         Path path = null;
-        try {
-            path = Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("questions.txt")).toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        path = Paths.get("questions.txt");
         List<String> questionSetList = null;
 
         try {
-            assert path != null;
             questionSetList = Files.readAllLines(path, StandardCharsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
