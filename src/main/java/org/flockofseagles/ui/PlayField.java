@@ -11,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import lombok.Getter;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import lombok.Setter;
 import org.flockofseagles.DatabaseQuestionUtility;
 import org.flockofseagles.Question;
 import org.flockofseagles.util.DataStore;
@@ -23,6 +24,9 @@ import java.util.Optional;
 import java.util.HashMap;
 
 public class PlayField extends GridPane {
+
+    @Setter
+    private int difficulty;
     protected Canvas[][] field;
     protected Player player = new Player(0, 0);
     protected Question q;
@@ -42,6 +46,8 @@ public class PlayField extends GridPane {
         HashMap<Question, Boolean> questions = new HashMap<>();
         DatabaseQuestionUtility db = new DatabaseQuestionUtility();
         db.loadQuestionSet().forEach(question -> questions.put(question, false));
+
+        this.difficulty = diff;
 
         // Set up data store for serialization and save states
         // TODO: Make the rows/cols random from 4-9
@@ -316,5 +322,7 @@ public class PlayField extends GridPane {
         return x == this.getLength() - 1 && y == this.getLength() - 1;
     }
 
-
+    public int getDifficulty() {
+        return difficulty;
+    }
 }

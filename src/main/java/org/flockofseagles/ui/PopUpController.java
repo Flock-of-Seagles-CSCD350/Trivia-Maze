@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import lombok.Setter;
 import org.flockofseagles.Question;
 
 import java.net.URL;
@@ -51,7 +52,8 @@ public class PopUpController extends Dialog<Void> implements Initializable {
     @FXML
     public Button btn_OK;
 
-    public static PlayField field = OptionsLayoutController.field;
+    @Setter
+    public PlayField field = OptionsLayoutController.field;
     public ToggleGroup radioGroup;
     public boolean isAnswered = false;
 

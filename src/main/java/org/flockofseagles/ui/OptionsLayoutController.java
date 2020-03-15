@@ -20,6 +20,8 @@ import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lombok.Getter;
+import lombok.Setter;
 import org.flockofseagles.TriviaMaze;
 
 import java.io.IOException;
@@ -74,11 +76,12 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
     }
 
     public void reInitialize() {
+
         field.clearPlayField();
         field = null;
-        System.gc();
         field = new PlayField(gameCanvas, difficulty);
         field.setMaze();
+        field.setDifficulty(difficulty);
         Image img = new Image("/images/grass.png");
         stPane.setBackground(new Background(new BackgroundImage(img, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
                 BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
@@ -89,8 +92,6 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
         if (isPlaying) {
             Wall w;
             field.correctAnswer = false;
-
-            System.out.println(String.format("X value: %s Y value: %s", field.getDataStore().getPlayer().xVal, field.getDataStore().getPlayer().yVal));
 
             if (new KeyCodeCombination(KeyCode.UP).match(keyEvent)) {
                 if (field.getDataStore().getPlayer().xVal == 0) {
@@ -272,6 +273,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
         FXMLLoader popUpLoader = new FXMLLoader(getClass().getClassLoader().getResource("popup.fxml"));
         Parent root = popUpLoader.load();
         PopUpController controller = popUpLoader.getController();
+        controller.setField(field);
         controller.setUp();
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UNDECORATED);
