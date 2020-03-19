@@ -29,6 +29,14 @@ public class TriviaMaze {
 		saveGame = save;
 	}
 
+	public static boolean deleteSavedGame(int slot) {
+		File file = new File(String.format("save_%d.dat", slot));
+		if (file.exists()) {
+			return file.delete();
+		}
+		return false;
+	}
+
 	public static SaveGame[] getSaves() {
 		var saves = new SaveGame[5];
 		for (int x = 0; x < 5; x++) {

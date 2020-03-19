@@ -52,6 +52,8 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 	@FXML
 	public MenuItem   menuItem_saveGame;
 	@FXML
+	public MenuItem   menuItem_deleteSave;
+	@FXML
 	public MenuItem   help_about;
 
 
@@ -63,6 +65,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 	private        ToggleGroup difficultyGroup;
 	private        ToggleGroup loadGroup;
 	private        ToggleGroup saveGroup;
+	private        ToggleGroup deleteGroup;
 	private        boolean     isPlaying  = true;
 
 	@Override
@@ -144,7 +147,6 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 				} else {
 					try {
 						w = field.getWall(field.getDataStore().getPlayer().xVal + 1, field.getDataStore().getPlayer().yVal);
-
 						if (w.isPassable) {
 							field.correctAnswer = true;
 							field.updatePlayer(2);
@@ -154,8 +156,6 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 							openPopUp();
 							field.updatePlayer(2);
 						}
-
-
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -365,14 +365,9 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 							setDifficulty(Difficulty.HARD);
 							reInitialize(new SaveGame(0));
 						}
-
-
 						s.close();
-
 					}
 				}
-
-
 			}
 		});
 	}
@@ -444,6 +439,83 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 				// re-init using chosen save data
 				reInitialize(saves[Integer.parseInt(loadGroup.getSelectedToggle().getUserData().toString())]);
 			}
+			s.close();
+		});
+	}
+
+	public void onDeleteSave(ActionEvent actionEvent) {
+		deleteGroup = new ToggleGroup();
+		Stage s = new Stage();
+		s.setTitle("Delete Saved Game");
+		s.initModality(Modality.WINDOW_MODAL);
+		VBox vbox = new VBox();
+
+		Button btnOK = new Button("Delete");
+
+		var buttons      = new RadioButton[5];
+		var descriptions = new Text[5];
+		var saves        = TriviaMaze.getSaves();
+		for (int i = 0; i < 5; i++) {
+			RadioButton btn      = new RadioButton(String.format("Save Game %d", i + 1));
+			Text        textArea = new Text();
+			if (saves[i] != null) {
+				var data = saves[i].getData();
+				// Get Localized Last Save String
+				DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
+				String            lastSave  = data.getLastSave().atZone(ZoneId.systemDefault()).format(formatter);
+
+				// Get Player Location
+				int x = data.getPlayer().xVal / 2;
+				int y = data.getPlayer().yVal / 2;
+
+				textArea.setText(String.format("Saved on: %s\nDifficulty: %s, Player @ (%d,%d)", lastSave, data.getDifficulty(), x,
+				                               y));
+				btn.setUserData(i);
+			} else {
+				textArea.setText("Empty Slot");
+				btn.setDisable(true);
+			}
+			descriptions[i] = textArea;
+			btn.setToggleGroup(deleteGroup);
+			btn.setOnAction(actionEvent1 -> btnOK.setDisable(false));
+			buttons[i] = btn;
+		}
+
+		for (int x = 0; x < 5; x++) {
+			vbox.getChildren().add(buttons[x]);
+			vbox.getChildren().add(descriptions[x]);
+		}
+		vbox.getChildren().add(btnOK);
+		vbox.setAlignment(Pos.CENTER_LEFT);
+		vbox.setSpacing(10);
+		vbox.setStyle("-fx-padding: 10");
+		Scene  scene = new Scene(vbox, 300, 400);
+		JMetro metro = new JMetro(Style.LIGHT);
+		metro.setScene(scene);
+		s.setScene(scene);
+		s.show();
+
+		if (deleteGroup.getSelectedToggle() == null) {
+			btnOK.setDisable(true);
+		}
+
+		btnOK.setOnAction(actionEvent1 -> {
+			field.getDataStore().setLastSave(Instant.now());
+			int slot = 0;
+			if (deleteGroup.getSelectedToggle().getUserData() != null) {
+				Alert alert = new Alert(Alert.AlertType.INFORMATION);
+				alert.setTitle("Confirm Changes");
+				alert.setHeaderText("Are you sure you want to delete this saved game?\n" +
+				                    "This is permanent and can't be undone!");
+				ButtonType btnCancel = ButtonType.CANCEL;
+				alert.getButtonTypes().add(btnCancel);
+				Optional<ButtonType> result = alert.showAndWait();
+
+				if (result.isPresent() && result.get() == ButtonType.OK) {
+					slot = Integer.parseInt(deleteGroup.getSelectedToggle().getUserData().toString());
+				}
+			}
+			TriviaMaze.deleteSavedGame(slot);
 			s.close();
 		});
 	}

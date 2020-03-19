@@ -5,15 +5,30 @@
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
-<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" style="-fx-background-color: #EDEDED;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.flockofseagles.ui.OptionsLayoutController">
+<AnchorPane fx:id="pane"
+            maxHeight="-Infinity"
+            maxWidth="-Infinity"
+            minHeight="-Infinity"
+            minWidth="-Infinity"
+            prefHeight="500.0"
+            prefWidth="600.0"
+            style="-fx-background-color: #EDEDED;"
+            xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.flockofseagles.ui.OptionsLayoutController">
     <children>
-        <StackPane fx:id="stPane" layoutX="62.0" layoutY="55.0" prefHeight="390.0" prefWidth="471.0" style="-fx-border-color: #3CB371; -fx-border-width: 5;">
+        <StackPane fx:id="stPane"
+                   layoutX="62.0"
+                   layoutY="55.0"
+                   prefHeight="390.0"
+                   prefWidth="471.0"
+                   style="-fx-border-color: #3CB371; -fx-border-width: 5;">
             <children>
                 <Canvas fx:id="gameCanvas" height="380.0" width="466.0" />
             </children>
-         <effect>
-            <DropShadow blurType="TWO_PASS_BOX" />
-         </effect>
+            <effect>
+                <DropShadow blurType="TWO_PASS_BOX" />
+            </effect>
         </StackPane>
         <MenuBar fx:id="menu" prefHeight="27.0" prefWidth="600.0" style="-fx-background-color: #3CB371;">
             <menus>
@@ -22,6 +37,7 @@
                         <MenuItem mnemonicParsing="false" onAction="#closeGame" text="Close" />
                         <MenuItem fx:id="menuItem_loadGame" text="Load Game" />
                         <MenuItem fx:id="menuItem_saveGame" text="Save Game" />
+                        <MenuItem fx:id="menuItem_deleteSave" text="Delete Save" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Settings">
@@ -35,9 +51,9 @@
                     </items>
                 </Menu>
             </menus>
-         <effect>
-            <DropShadow radius="4.75" width="0.0" />
-         </effect>
+            <effect>
+                <DropShadow radius="4.75" width="0.0" />
+            </effect>
         </MenuBar>
     </children>
 </AnchorPane>
