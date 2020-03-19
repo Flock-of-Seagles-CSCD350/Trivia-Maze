@@ -13,7 +13,7 @@ public class TriviaMaze {
 
 	@Getter
 	@Setter
-	private SaveGame saveGame;
+	private static SaveGame saveGame;
 
 	public static void main(String[] args) {
 		if (args.length > 0 && args[0].equals("--admin")) {
@@ -24,7 +24,9 @@ public class TriviaMaze {
 	}
 
 	public static void saveGame(DataStore data, int slot) {
-		new SaveGame(data, slot).save();
+		var save = new SaveGame(data, slot);
+		save.save();
+		saveGame = save;
 	}
 
 	public static SaveGame[] getSaves() {

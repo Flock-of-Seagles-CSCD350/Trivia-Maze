@@ -28,8 +28,8 @@ public class PlayField extends GridPane {
     private List<Question> questionList;
     protected boolean correctAnswer = false;
 
-    @Getter
-    private DataStore dataStore;
+	@Getter
+	private final DataStore dataStore;
 
 	public PlayField(Canvas canvas, Difficulty diff) {
 		super();
@@ -46,7 +46,7 @@ public class PlayField extends GridPane {
 
 		// Set up data store for serialization and save states
 		// TODO: Make the rows/cols random from 4-9
-		dataStore = new DataStore(9, 9, new Player(0, 0), questions, difficulty);
+		this.dataStore = new DataStore(9, 9, new Player(0, 0), questions, difficulty);
 
 		this.setWidth(canvas.getWidth());
 		this.setHeight(canvas.getHeight());

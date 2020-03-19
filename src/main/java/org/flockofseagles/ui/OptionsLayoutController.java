@@ -26,6 +26,7 @@ import org.flockofseagles.ui.util.Difficulty;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -46,16 +47,20 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 	@FXML
 	public MenuItem   menuItem_loadGame;
 	@FXML
+	public MenuItem   menuItem_saveGame;
+	@FXML
 	public MenuItem   help_about;
 
 
-	public static  PlayField   field;
+	public static PlayField field;
+	public        boolean   adminPrivileges = false;
+
+	private static Difficulty  difficulty = Difficulty.EASY;
 	private        ToggleGroup radioGroup;
 	private        ToggleGroup difficultyGroup;
+	private        ToggleGroup loadGroup;
 	private        ToggleGroup saveGroup;
-	private static Difficulty  difficulty      = Difficulty.EASY;
-	public         boolean     adminPrivileges = false;
-	private        boolean     isPlaying       = true;
+	private        boolean     isPlaying  = true;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -78,7 +83,6 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		Button btnGo = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
 		btnGo.setText("Let's Go!");
 		alert.showAndWait();
-
 	}
 
 	public void reInitialize() {
@@ -367,7 +371,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 	}
 
 	public void onLoadGame(ActionEvent actionEvent) {
-		saveGroup = new ToggleGroup();
+		loadGroup = new ToggleGroup();
 		Stage s = new Stage();
 		s.setTitle("Load Game");
 		s.initModality(Modality.WINDOW_MODAL);
@@ -392,11 +396,13 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 				int y = data.getPlayer().yVal;
 
 				textArea.setText(String.format("Saved on: %s\nDifficulty: %s, Player @ (%d,%d)", lastSave, data.getDifficulty(), x, y));
+				btn.setOnAction(actionEvent1 -> btnOK.setDisable(false));
 			} else {
 				textArea.setText("Empty Slot");
+				btn.setDisable(true);
 			}
 			descriptions[i] = textArea;
-			btn.setToggleGroup(saveGroup);
+			btn.setToggleGroup(loadGroup);
 			buttons[i] = btn;
 		}
 
@@ -408,10 +414,13 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		vbox.setAlignment(Pos.CENTER_LEFT);
 		vbox.setSpacing(10);
 		vbox.setStyle("-fx-padding: 10");
-		Scene scene = new Scene(vbox, 300, 300);
+		Scene scene = new Scene(vbox, 300, 400);
 		s.setScene(scene);
 		s.show();
 
+		if (loadGroup.getSelectedToggle() == null) {
+			btnOK.setDisable(true);
+		}
 		btnOK.setOnAction(actionEvent1 -> {
 			Alert alert = new Alert(Alert.AlertType.INFORMATION);
 			alert.setTitle("Confirm Changes");
@@ -428,15 +437,90 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		});
 	}
 
+	public void onSaveGame(ActionEvent actionEvent) {
+		if (field.getDataStore().getLastSave() != Instant.EPOCH) {
+			TriviaMaze.saveGame(field.getDataStore(), TriviaMaze.getSaveGame().getSlot());
+		} else {
+			saveGroup = new ToggleGroup();
+			Stage s = new Stage();
+			s.setTitle("Save Game");
+			s.initModality(Modality.WINDOW_MODAL);
+			VBox vbox = new VBox();
+
+			Button btnOK = new Button("Save");
+
+			var buttons      = new RadioButton[5];
+			var descriptions = new Text[5];
+			var saves        = TriviaMaze.getSaves();
+			for (int i = 0; i < 5; i++) {
+				RadioButton btn      = new RadioButton(String.format("Save Game %d", i + 1));
+				Text        textArea = new Text();
+				if (saves[i] != null) {
+					var data = saves[i].getData();
+					// Get Localized Last Save String
+					DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
+					String            lastSave  = data.getLastSave().atZone(ZoneId.systemDefault()).format(formatter);
+
+					// Get Player Location
+					int x = data.getPlayer().xVal;
+					int y = data.getPlayer().yVal;
+
+					textArea.setText(String.format("Saved on: %s\nDifficulty: %s, Player @ (%d,%d)", lastSave, data.getDifficulty(), x,
+					                               y));
+					btn.setUserData(i + "X");
+				} else {
+					textArea.setText("Empty Slot");
+					btn.setUserData(i);
+				}
+				descriptions[i] = textArea;
+				btn.setToggleGroup(saveGroup);
+				btn.setOnAction(actionEvent1 -> btnOK.setDisable(false));
+				buttons[i] = btn;
+			}
+
+			for (int x = 0; x < 5; x++) {
+				vbox.getChildren().add(buttons[x]);
+				vbox.getChildren().add(descriptions[x]);
+			}
+			vbox.getChildren().add(btnOK);
+			vbox.setAlignment(Pos.CENTER_LEFT);
+			vbox.setSpacing(10);
+			vbox.setStyle("-fx-padding: 10");
+			Scene scene = new Scene(vbox, 300, 400);
+			s.setScene(scene);
+			s.show();
+
+			if (saveGroup.getSelectedToggle() == null) {
+				btnOK.setDisable(true);
+			}
+
+			btnOK.setOnAction(actionEvent1 -> {
+				field.getDataStore().setLastSave(Instant.now());
+				int slot = 0;
+				if (saveGroup.getSelectedToggle().getUserData().toString().endsWith("X")) {
+					Alert alert = new Alert(Alert.AlertType.INFORMATION);
+					alert.setTitle("Confirm Changes");
+					alert.setHeaderText("Using this slot will overwrite the save data it currently has!\n" +
+					                    "Are you sure you want to continue? This can't be undone!");
+					ButtonType btnCancel = ButtonType.CANCEL;
+					alert.getButtonTypes().add(btnCancel);
+					Optional<ButtonType> result = alert.showAndWait();
+
+					if (result.isPresent() && result.get() == ButtonType.OK) {
+						slot = Integer.parseInt(saveGroup.getSelectedToggle().getUserData().toString().substring(0, 1));
+					}
+				} else {
+					slot = Integer.parseInt(saveGroup.getSelectedToggle().getUserData().toString());
+				}
+				TriviaMaze.saveGame(field.getDataStore(), slot);
+				s.close();
+			});
+		}
+	}
+
 	public void closeGame(ActionEvent actionEvent) {
 		System.exit(0);
 		Platform.exit();
-	}
-
-	public void saveGame(ActionEvent actionEvent) {
-		System.out.println("Saving game...");
-		TriviaMaze.saveGame(field.getDataStore(), 0);
-		System.out.println("Game saved!");
 	}
 
 }

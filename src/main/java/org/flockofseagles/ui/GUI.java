@@ -25,6 +25,7 @@ public class GUI extends Application {
 		scene.setOnKeyPressed(optionsController::onKeyPressed);
 		optionsController.menuItem_difficulty.setOnAction(optionsController::onDifficulty);
 		optionsController.menuItem_loadGame.setOnAction(optionsController::onLoadGame);
+		optionsController.menuItem_saveGame.setOnAction(optionsController::onSaveGame);
 		primaryStage.setTitle("Trivia Maze");
 		primaryStage.setScene(scene);
 		primaryStage.show();

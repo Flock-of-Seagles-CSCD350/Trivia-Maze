@@ -21,7 +21,7 @@
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#closeGame" text="Close" />
                         <MenuItem fx:id="menuItem_loadGame" text="Load Game" />
-                        <MenuItem onAction="#saveGame" text="Save Game" />
+                        <MenuItem fx:id="menuItem_saveGame" text="Save Game" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Settings">
