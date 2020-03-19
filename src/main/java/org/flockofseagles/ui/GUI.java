@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 
 public class GUI extends Application {
 
@@ -20,7 +22,9 @@ public class GUI extends Application {
 		Parent                  root              = documentLoader.load();
 		OptionsLayoutController optionsController = documentLoader.getController();
 		field = OptionsLayoutController.field;
-		Scene scene = new Scene(root, 600, 500);
+		Scene  scene = new Scene(root, 600, 500);
+		JMetro metro = new JMetro(Style.LIGHT);
+		metro.setScene(scene);
 
 		scene.setOnKeyPressed(optionsController::onKeyPressed);
 		optionsController.menuItem_difficulty.setOnAction(optionsController::onDifficulty);

@@ -21,6 +21,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 import org.flockofseagles.TriviaMaze;
 import org.flockofseagles.ui.util.Difficulty;
 
@@ -289,7 +291,9 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		controller.setUp();
 		Stage stage = new Stage();
 		stage.initStyle(StageStyle.UNDECORATED);
-		Scene scene = new Scene(root);
+		Scene  scene = new Scene(root);
+		JMetro metro = new JMetro(Style.LIGHT);
+		metro.setScene(scene);
 		stage.setScene(scene);
 		stage.showAndWait();
 	}
@@ -326,7 +330,9 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		vbox.getChildren().addAll(easy, medium, hard, btnOK);
 		vbox.setAlignment(Pos.CENTER_LEFT);
 		vbox.setSpacing(10);
-		Scene scene = new Scene(vbox, 300, 125);
+		Scene  scene = new Scene(vbox, 300, 125);
+		JMetro metro = new JMetro(Style.LIGHT);
+		metro.setScene(scene);
 		s.setScene(scene);
 		s.show();
 
@@ -392,10 +398,10 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 				String            lastSave  = data.getLastSave().atZone(ZoneId.systemDefault()).format(formatter);
 
 				// Get Player Location
-				int x = data.getPlayer().xVal;
-				int y = data.getPlayer().yVal;
+				int x = (data.getPlayer().xVal / 2) + 1;
+				int y = (data.getPlayer().yVal / 2) + 1;
 
-				textArea.setText(String.format("Saved on: %s\nDifficulty: %s, Player @ (%d,%d)", lastSave, data.getDifficulty(), x, y));
+				textArea.setText(String.format("%s\n%s    Player @ (R-%d, C-%d)", lastSave, data.getDifficulty(), x, y));
 				btn.setOnAction(actionEvent1 -> btnOK.setDisable(false));
 			} else {
 				textArea.setText("Empty Slot");
@@ -414,7 +420,9 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		vbox.setAlignment(Pos.CENTER_LEFT);
 		vbox.setSpacing(10);
 		vbox.setStyle("-fx-padding: 10");
-		Scene scene = new Scene(vbox, 300, 400);
+		Scene  scene = new Scene(vbox, 300, 400);
+		JMetro metro = new JMetro(Style.LIGHT);
+		metro.setScene(scene);
 		s.setScene(scene);
 		s.show();
 
@@ -462,8 +470,8 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 					String            lastSave  = data.getLastSave().atZone(ZoneId.systemDefault()).format(formatter);
 
 					// Get Player Location
-					int x = data.getPlayer().xVal;
-					int y = data.getPlayer().yVal;
+					int x = data.getPlayer().xVal / 2;
+					int y = data.getPlayer().yVal / 2;
 
 					textArea.setText(String.format("Saved on: %s\nDifficulty: %s, Player @ (%d,%d)", lastSave, data.getDifficulty(), x,
 					                               y));
@@ -486,7 +494,9 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 			vbox.setAlignment(Pos.CENTER_LEFT);
 			vbox.setSpacing(10);
 			vbox.setStyle("-fx-padding: 10");
-			Scene scene = new Scene(vbox, 300, 400);
+			Scene  scene = new Scene(vbox, 300, 400);
+			JMetro metro = new JMetro(Style.LIGHT);
+			metro.setScene(scene);
 			s.setScene(scene);
 			s.show();
 
