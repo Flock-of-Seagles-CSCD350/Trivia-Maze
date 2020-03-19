@@ -12,6 +12,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,7 +63,7 @@ public class APIQuestionLoader {
 
         try {
             FileOutputStream fos = new FileOutputStream("questions.txt", true);
-            OutputStreamWriter writer = new OutputStreamWriter(fos);
+            OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
             writer.append(questionText);
 
             for (String s : possibleAnswers) {

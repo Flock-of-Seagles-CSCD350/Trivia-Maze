@@ -263,12 +263,11 @@ public class DatabaseQuestionUtility implements QuestionUtility {
 
         new APIQuestionLoader().writeQuestionsToFile();
 
-        Path path = null;
-        path = Paths.get("questions.txt");
+        Path path = Paths.get("questions.txt");
         List<String> questionSetList = null;
 
         try {
-            questionSetList = Files.readAllLines(path, StandardCharsets.UTF_8);
+            questionSetList = Files.readAllLines(path);
         } catch (IOException e) {
             e.printStackTrace();
         }
