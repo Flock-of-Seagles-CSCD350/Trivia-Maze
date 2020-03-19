@@ -23,4 +23,17 @@
 hs_err_pid*
 
 # IntelliJ Project Folder
-.idea\
+**\.idea
+
+# IntelliJ iml files
+*.iml
+
+# Sqlite files
+*.sqlite
+/src/trivia-maze.iml
+
+#target folder
+target/**/*
+
+#Out folder
+out/**/*

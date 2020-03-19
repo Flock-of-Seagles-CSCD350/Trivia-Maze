@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.InnerShadow?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<AnchorPane fx:id="mainPane"
+            maxHeight="-Infinity"
+            maxWidth="-Infinity"
+            minHeight="-Infinity"
+            minWidth="-Infinity"
+            prefHeight="200.0"
+            prefWidth="414.0"
+            style="-fx-border-width: 4; -fx-border-color: #3CB371;"
+            xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.flockofseagles.ui.PopUpController">
+    <children>
+        <SplitPane fx:id="spl_pane"
+                   dividerPositions="0.38513513513513514"
+                   orientation="VERTICAL"
+                   prefHeight="200.0"
+                   prefWidth="415.0">
+            <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                    <children>
+                        <Label fx:id="lbl_question" layoutX="8.0" layoutY="19.0" text="Label" />
+                    </children>
+                </AnchorPane>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="298.0">
+                    <children>
+                        <VBox fx:id="vbox_answers" layoutY="1.0" prefHeight="88.0" prefWidth="100.0" spacing="5.0">
+                            <children>
+                                <RadioButton fx:id="rb_answer1" mnemonicParsing="false" text="answer1">
+                                    <toggleGroup>
+                                        <ToggleGroup fx:id="radioGroup" />
+                                    </toggleGroup>
+                                </RadioButton>
+                                <RadioButton fx:id="rb_answer2"
+                                             mnemonicParsing="false"
+                                             text="answer2"
+                                             toggleGroup="$radioGroup" />
+                                <RadioButton fx:id="rb_answer3"
+                                             mnemonicParsing="false"
+                                             text="answer3"
+                                             toggleGroup="$radioGroup" />
+                                <RadioButton fx:id="rb_answer4"
+                                             mnemonicParsing="false"
+                                             text="answer4"
+                                             toggleGroup="$radioGroup" />
+                            </children>
+                            <padding>
+                                <Insets left="5.0" />
+                            </padding>
+                        </VBox>
+                        <ImageView fx:id="img_status"
+                                   fitHeight="75.0"
+                                   fitWidth="75.0"
+                                   layoutX="212.0"
+                                   layoutY="7.0"
+                                   pickOnBounds="true"
+                                   preserveRatio="true" />
+                        <Button fx:id="btn_OK"
+                                layoutX="348.0"
+                                layoutY="31.0"
+                                mnemonicParsing="false"
+                                style="-fx-background-color: #3CB371;"
+                                text="OK">
+                            <effect>
+                                <InnerShadow height="8.97" radius="6.2075" width="17.86" />
+                            </effect>
+                        </Button>
+                    </children>
+                </AnchorPane>
+            </items>
+        </SplitPane>
+    </children>
+</AnchorPane>
