@@ -11,10 +11,9 @@ import org.flockofseagles.DatabaseQuestionUtility;
 import org.flockofseagles.Question;
 import org.flockofseagles.ui.util.Difficulty;
 import org.flockofseagles.util.DataStore;
+import org.flockofseagles.util.SaveGame;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class PlayField extends GridPane {
 
@@ -22,16 +21,12 @@ public class PlayField extends GridPane {
 	@Getter
 	private   Difficulty difficulty;
 	protected Canvas[][] field;
-	protected Player player = new Player(0, 0);
-	protected Question q;
-    ArrayList<Wall> walls = new ArrayList<>();
-    private List<Question> questionList;
-    protected boolean correctAnswer = false;
+	protected boolean    correctAnswer = false;
 
 	@Getter
 	private final DataStore dataStore;
 
-	public PlayField(Canvas canvas, Difficulty diff) {
+	public PlayField(Canvas canvas, Difficulty diff, SaveGame saveGame) {
 		super();
 
 		if (canvas == null) {
@@ -45,8 +40,11 @@ public class PlayField extends GridPane {
 		this.difficulty = diff;
 
 		// Set up data store for serialization and save states
-		// TODO: Make the rows/cols random from 4-9
-		this.dataStore = new DataStore(9, 9, new Player(0, 0), questions, difficulty);
+		if (saveGame.getData() == null) {
+			this.dataStore = new DataStore(9, 9, new Player(0, 0), questions, difficulty);
+		} else {
+			this.dataStore = saveGame.getData();
+		}
 
 		this.setWidth(canvas.getWidth());
 		this.setHeight(canvas.getHeight());
@@ -82,17 +80,19 @@ public class PlayField extends GridPane {
         for (int i = 0; i < this.field.length; i++) {
             //cols
             for (int j = 0; j < this.field.length; j++) {
-                if (i == 0 && j == 0) {
-                    canvas = this.field[i][j];
-                    dataStore.getPlayer().draw(canvas);
-                }
+	            int x = dataStore.getPlayer().xVal;
+	            int y = dataStore.getPlayer().yVal;
+	            if (i == x && j == y) {
+		            canvas = this.field[i][j];
+		            dataStore.getPlayer().draw(canvas);
+	            }
 
-                // if current row is an even number
-                if ((i % 2) == 0 && j + 1 < this.field.length) {
-                    j++;
-                    canvas = this.field[i][j];
-                    w = getWall(i, j);
-                    w.drawVert(canvas);
+	            // if current row is an even number
+	            if ((i % 2) == 0 && j + 1 < this.field.length) {
+		            j++;
+		            canvas = this.field[i][j];
+		            w      = getWall(i, j);
+		            w.drawVert(canvas);
                 } else if ((j % 2) == 0 && (i % 2) == 1) {
                     canvas = this.field[i][j];
                     w = getWall(i, j);
@@ -132,9 +132,9 @@ public class PlayField extends GridPane {
                 pick = new Media(getClass().getClassLoader().getResource("sounds/close_door.wav").toString());
                 mPlayer = new MediaPlayer(pick);
                 mPlayer.play();
-                canvas = this.field[dataStore.getPlayer().xVal - 1][dataStore.getPlayer().yVal];
-                w.isLocked = true;
-                w.drawHorzLocked(canvas);
+	            canvas     = this.field[dataStore.getPlayer().xVal - 1][dataStore.getPlayer().yVal];
+	            w.isLocked = true;
+	            w.drawHorz(canvas);
             }
         } else if (i == 2) {    //move down
 
@@ -151,9 +151,9 @@ public class PlayField extends GridPane {
                 mPlayer = new MediaPlayer(pick);
                 mPlayer.play();
 
-                canvas = this.field[dataStore.getPlayer().xVal + 1][dataStore.getPlayer().yVal];
-                w.isLocked = true;
-                w.drawHorzLocked(canvas);
+	            canvas     = this.field[dataStore.getPlayer().xVal + 1][dataStore.getPlayer().yVal];
+	            w.isLocked = true;
+	            w.drawHorz(canvas);
             }
         } else if (i == 3) { //move left
 
@@ -170,9 +170,9 @@ public class PlayField extends GridPane {
                 mPlayer = new MediaPlayer(pick);
                 mPlayer.play();
 
-                canvas = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal - 1];
-                w.isLocked = true;
-                w.drawVertLocked(canvas);
+	            canvas     = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal - 1];
+	            w.isLocked = true;
+	            w.drawVert(canvas);
             }
         } else if (i == 4) { //move right
 
@@ -188,9 +188,9 @@ public class PlayField extends GridPane {
                 mPlayer = new MediaPlayer(pick);
                 mPlayer.play();
 
-                canvas = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal + 1];
-                w.isLocked = true;
-                w.drawVertLocked(canvas);
+	            canvas     = this.field[dataStore.getPlayer().xVal][dataStore.getPlayer().yVal + 1];
+	            w.isLocked = true;
+	            w.drawVert(canvas);
             }
         }
     }
@@ -213,10 +213,10 @@ public class PlayField extends GridPane {
             }
         }
 
-        dataStore.getPlayer().xVal = 0;
-        dataStore.getPlayer().yVal = 0;
-        walls = null;
-        System.gc();
+	    dataStore.getPlayer().xVal = 0;
+	    dataStore.getPlayer().yVal = 0;
+	    dataStore.getWalls().clear();
+	    System.gc();
     }
 
     public Canvas getCanvas(int x, int y) {
@@ -224,10 +224,11 @@ public class PlayField extends GridPane {
     }
 
     public Wall getWall(int x, int y) {
-        for (Wall w : walls) {
-            if (w.xVal == x && w.yVal == y)
-                return w;
-        }
+	    for (Wall w : dataStore.getWalls()) {
+		    if (w.xVal == x && w.yVal == y) {
+			    return w;
+		    }
+	    }
         return null;
     }
 
@@ -242,14 +243,14 @@ public class PlayField extends GridPane {
                 // if current row is an even number
                 if ((i % 2) == 0 && j + 1 < this.field.length) {
                     j++;
-                    w = new Wall(i, j);
-                    walls.add(w);
+	                w = new Wall(i, j);
+	                dataStore.getWalls().add(w);
                 } else if ((j % 2) == 0 && (i % 2) == 1) {
-                    w = new Wall(i, j);
-                    walls.add(w);
+	                w = new Wall(i, j);
+	                dataStore.getWalls().add(w);
                 } else if ((j % 2) == 1 && (i % 2) == 1) {
-                    w = new Wall(i, j);
-                    walls.add(w);
+	                w = new Wall(i, j);
+	                dataStore.getWalls().add(w);
                 }
             }
         }

@@ -25,6 +25,7 @@ import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 import org.flockofseagles.TriviaMaze;
 import org.flockofseagles.ui.util.Difficulty;
+import org.flockofseagles.util.SaveGame;
 
 import java.io.IOException;
 import java.net.URL;
@@ -66,7 +67,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		field = new PlayField(gameCanvas, difficulty);
+		field = new PlayField(gameCanvas, difficulty, new SaveGame(0));
 		field.setMaze();
 		Image img = new Image("/images/grass.png");
 		stPane.setBackground(new Background(new BackgroundImage(img, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
@@ -87,16 +88,16 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		alert.showAndWait();
 	}
 
-	public void reInitialize() {
+	public void reInitialize(SaveGame saveGame) {
 		field.clearPlayField();
 		field = null;
-		field = new PlayField(gameCanvas, difficulty);
+		field = new PlayField(gameCanvas, difficulty, saveGame);
 		field.setMaze();
-		field.setDifficulty(difficulty);
 		Image img = new Image("/images/grass.png");
 		stPane.setBackground(new Background(new BackgroundImage(img, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT,
 		                                                        BackgroundPosition.CENTER, BackgroundSize.DEFAULT)));
 		stPane.getChildren().add(field);
+		TriviaMaze.setSaveGame(saveGame);
 	}
 
 	public void onKeyPressed(KeyEvent keyEvent) {
@@ -276,8 +277,8 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		alert2.getButtonTypes().add(ButtonType.NO);
 		Optional<ButtonType> choice = alert2.showAndWait();
 
-		if (choice.get() == ButtonType.OK) {
-			reInitialize();
+		if (choice.isPresent() && choice.get() == ButtonType.OK) {
+			reInitialize(new SaveGame(0));
 		} else {
 			System.exit(0);
 		}
@@ -330,7 +331,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 		vbox.getChildren().addAll(easy, medium, hard, btnOK);
 		vbox.setAlignment(Pos.CENTER_LEFT);
 		vbox.setSpacing(10);
-		Scene  scene = new Scene(vbox, 300, 125);
+		Scene  scene = new Scene(vbox, 300, 200);
 		JMetro metro = new JMetro(Style.LIGHT);
 		metro.setScene(scene);
 		s.setScene(scene);
@@ -347,22 +348,22 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 				alert.getButtonTypes().add(btnCancel);
 				Optional<ButtonType> result = alert.showAndWait();
 
-				if (result.get() == ButtonType.OK) {
+				if (result.isPresent() && result.get() == ButtonType.OK) {
 					if (selected.equals(difficultyGroup.getSelectedToggle())) {
 						s.close();
 					} else {
 						if (((RadioButton) difficultyGroup.getSelectedToggle()).getText().equals("Easy")) {
 							difficultyGroup.selectToggle(selected);
 							setDifficulty(Difficulty.EASY);
-							reInitialize();
+							reInitialize(new SaveGame(0));
 						} else if (((RadioButton) difficultyGroup.getSelectedToggle()).getText().equals("Medium")) {
 							difficultyGroup.selectToggle(selected);
 							setDifficulty(Difficulty.MEDIUM);
-							reInitialize();
+							reInitialize(new SaveGame(0));
 						} else {
 							difficultyGroup.selectToggle(selected);
 							setDifficulty(Difficulty.HARD);
-							reInitialize();
+							reInitialize(new SaveGame(0));
 						}
 
 
@@ -403,6 +404,7 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 
 				textArea.setText(String.format("%s\n%s    Player @ (R-%d, C-%d)", lastSave, data.getDifficulty(), x, y));
 				btn.setOnAction(actionEvent1 -> btnOK.setDisable(false));
+				btn.setUserData(i);
 			} else {
 				textArea.setText("Empty Slot");
 				btn.setDisable(true);
@@ -439,7 +441,8 @@ public class OptionsLayoutController extends Dialog<Void> implements Initializab
 			Optional<ButtonType> result = alert.showAndWait();
 
 			if (result.isPresent() && result.get() == ButtonType.OK) {
-				reInitialize();
+				// re-init using chosen save data
+				reInitialize(saves[Integer.parseInt(loadGroup.getSelectedToggle().getUserData().toString())]);
 			}
 			s.close();
 		});

@@ -23,6 +23,11 @@ public class SaveGame implements SaveData {
 		this.slot = slot;
 	}
 
+	public SaveGame(int slot) {
+		this.data = null;
+		this.slot = slot;
+	}
+
 	@Override
 	public Result save() {
 		try {

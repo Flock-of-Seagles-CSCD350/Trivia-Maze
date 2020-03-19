@@ -3,6 +3,7 @@ package org.flockofseagles.uitests;
 import javafx.scene.canvas.Canvas;
 import org.flockofseagles.ui.PlayField;
 import org.flockofseagles.ui.util.Difficulty;
+import org.flockofseagles.util.SaveGame;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,7 +19,7 @@ public class PlayFieldTests {
     @BeforeEach
     public void setup() {
 	    testCanvas = new Canvas();
-	    p          = new PlayField(testCanvas, Difficulty.EASY);
+	    p          = new PlayField(testCanvas, Difficulty.EASY, new SaveGame(0));
 	    p.initializePlayField(Difficulty.EASY);
     }
 
@@ -37,7 +38,7 @@ public class PlayFieldTests {
     @Test
     public void playField_Constructor_throwsException_onNullArgument() {
         assertThrows(IllegalArgumentException.class, () -> {
-	        PlayField testField = new PlayField(null, Difficulty.EASY);
+	        PlayField testField = new PlayField(null, Difficulty.EASY, new SaveGame(0));
         });
     }
 
