@@ -20,13 +20,11 @@
                 <Menu mnemonicParsing="false" text="File">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#closeGame" text="Close" />
+                        <MenuItem fx:id="menuItem_loadGame" text="Load Game" />
                         <MenuItem onAction="#saveGame" text="Save Game" />
                     </items>
                 </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
-                    </items>
+                <Menu mnemonicParsing="false" text="Settings">
                     <items>
                         <MenuItem fx:id="menuItem_difficulty" mnemonicParsing="false" text="Change Difficulty" />
                     </items>

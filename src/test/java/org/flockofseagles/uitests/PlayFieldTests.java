@@ -1,24 +1,14 @@
 package org.flockofseagles.uitests;
 
-import org.flockofseagles.DatabaseQuestionUtilityTests;
-import org.flockofseagles.ui.PlayField;
-import org.flockofseagles.ui.Wall;
-import org.junit.jupiter.api.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
-import javafx.scene.layout.GridPane;
-import org.flockofseagles.DatabaseQuestionUtility;
-import org.flockofseagles.Question;
+import org.flockofseagles.ui.PlayField;
+import org.flockofseagles.ui.util.Difficulty;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
-import java.sql.*;
-import java.util.Random;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayFieldTests {
 
@@ -27,9 +17,9 @@ public class PlayFieldTests {
 
     @BeforeEach
     public void setup() {
-        testCanvas = new Canvas();
-        p = new PlayField(testCanvas, 1);
-        p.initializePlayField(1);
+	    testCanvas = new Canvas();
+	    p          = new PlayField(testCanvas, Difficulty.EASY);
+	    p.initializePlayField(Difficulty.EASY);
     }
 
     @Test
@@ -47,7 +37,7 @@ public class PlayFieldTests {
     @Test
     public void playField_Constructor_throwsException_onNullArgument() {
         assertThrows(IllegalArgumentException.class, () -> {
-            PlayField testField = new PlayField(null, 1);
+	        PlayField testField = new PlayField(null, Difficulty.EASY);
         });
     }
 

@@ -3,7 +3,7 @@ package org.flockofseagles.util;
 
 public interface SaveData {
 
-	void save();
+	Result save();
 
 	void delete();
 

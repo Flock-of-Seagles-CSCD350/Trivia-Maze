@@ -3,32 +3,46 @@ package org.flockofseagles.util;
 
 import lombok.Getter;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.time.Instant;
 
 public class SaveGame implements SaveData {
 
 	@Getter
 	private DataStore data;
+	@Getter
+	private int       slot;
+	@Getter
+	private Instant   date;
 
-	public SaveGame(DataStore data) {
+	public SaveGame(DataStore data, int slot) {
 		this.data = data;
+		this.slot = slot;
 	}
 
 	@Override
-	public void save() {
+	public Result save() {
 		try {
-			FileOutputStream   outputStream       = new FileOutputStream("savegame.dat");
+			var fileName = String.format("save_%d.dat", slot);
+
+			File file = new File(fileName);
+			// Make sure the file doesn't exist so we don't overwrite anything accidentally
+			if (file.exists()) {
+
+			}
+			FileOutputStream   outputStream       = new FileOutputStream(fileName);
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 			objectOutputStream.writeObject(data);
 			objectOutputStream.close();
 			outputStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-			// TODO: Error in GUI
+			return Result.FAIL;
 		}
-		// TODO: Successful save message in GUI
+		return Result.OKAY;
 	}
 
 	@Override

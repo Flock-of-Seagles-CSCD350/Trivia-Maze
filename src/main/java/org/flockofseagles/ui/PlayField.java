@@ -2,34 +2,28 @@ package org.flockofseagles.ui;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import lombok.Getter;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import lombok.Getter;
 import lombok.Setter;
 import org.flockofseagles.DatabaseQuestionUtility;
 import org.flockofseagles.Question;
+import org.flockofseagles.ui.util.Difficulty;
 import org.flockofseagles.util.DataStore;
 
-import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.HashMap;
+import java.util.List;
 
 public class PlayField extends GridPane {
 
-    @Setter
-    private int difficulty;
-    protected Canvas[][] field;
-    protected Player player = new Player(0, 0);
-    protected Question q;
+	@Setter
+	@Getter
+	private   Difficulty difficulty;
+	protected Canvas[][] field;
+	protected Player player = new Player(0, 0);
+	protected Question q;
     ArrayList<Wall> walls = new ArrayList<>();
     private List<Question> questionList;
     protected boolean correctAnswer = false;
@@ -37,55 +31,45 @@ public class PlayField extends GridPane {
     @Getter
     private DataStore dataStore;
 
-    public PlayField(Canvas canvas, int diff) {
-        super();
+	public PlayField(Canvas canvas, Difficulty diff) {
+		super();
 
-        if (canvas == null)
-            throw new IllegalArgumentException("Null canvas object passed into PlayField Constructor");
+		if (canvas == null) {
+			throw new IllegalArgumentException("Null canvas object passed into PlayField Constructor");
+		}
 
-        HashMap<Question, Boolean> questions = new HashMap<>();
-        DatabaseQuestionUtility db = new DatabaseQuestionUtility();
-        db.loadQuestionSet().forEach(question -> questions.put(question, false));
+		HashMap<Question, Boolean> questions = new HashMap<>();
+		DatabaseQuestionUtility    db        = new DatabaseQuestionUtility();
+		db.loadQuestionSet().forEach(question -> questions.put(question, false));
 
-        this.difficulty = diff;
+		this.difficulty = diff;
 
-        // Set up data store for serialization and save states
-        // TODO: Make the rows/cols random from 4-9
-        dataStore = new DataStore(9, 9, new Player(0, 0), questions);
+		// Set up data store for serialization and save states
+		// TODO: Make the rows/cols random from 4-9
+		dataStore = new DataStore(9, 9, new Player(0, 0), questions, difficulty);
 
-        this.setWidth(canvas.getWidth());
-        this.setHeight(canvas.getHeight());
-        this.field = initializePlayField(diff);
-        setWalls();
-    }
+		this.setWidth(canvas.getWidth());
+		this.setHeight(canvas.getHeight());
+		this.field = initializePlayField(diff);
+		setWalls();
+	}
 
-    public Canvas[][] initializePlayField(int l) {
-        int rows, cols;
-        Canvas[][] cArra;
-        Canvas canvas;
+	public Canvas[][] initializePlayField(Difficulty difficulty) {
+		int        size = difficulty.getSize();
+		Canvas[][] cArra;
+		Canvas     canvas;
 
-        if (l == 1) { //normal difficulty
-            rows = 9;
-            cols = 9;
-        } else if (l == 2) {
-            rows = 13;
-            cols = 13;
-        } else {
-            rows = 21;
-            cols = 21;
-        }
+		cArra = new Canvas[size][size];
 
-        cArra = new Canvas[rows][cols];
-
-        for (int i = 0; i < rows; i++) {
-            //cols
-            for (int j = 0; j < cols; j++) {
-                canvas = new Canvas(this.getWidth() / rows, this.getHeight() / cols);
-                this.add(canvas, j, i, 1, 1);
-                cArra[i][j] = canvas;
-                cArra[i][j].setUserData("Empty");
-            }
-        }
+		for (int i = 0; i < size; i++) {
+			//cols
+			for (int j = 0; j < size; j++) {
+				canvas = new Canvas(this.getWidth() / size, this.getHeight() / size);
+				this.add(canvas, j, i, 1, 1);
+				cArra[i][j] = canvas;
+				cArra[i][j].setUserData("Empty");
+			}
+		}
         return cArra;
     }
 
@@ -322,7 +306,4 @@ public class PlayField extends GridPane {
         return x == this.getLength() - 1 && y == this.getLength() - 1;
     }
 
-    public int getDifficulty() {
-        return difficulty;
-    }
 }
